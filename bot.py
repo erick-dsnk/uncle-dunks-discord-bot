@@ -17,12 +17,27 @@ def get_token():
     
     return data
 
+def get_client_id():
+    with open("client_id.txt", "r") as f:
+        data = f.read()
+        f.close()
+    
+    return data
+
+def get_client_secret():
+    with open("client_secret.txt", "r") as f:
+        data = f.read()
+        f.close()
+    
+    return data
 
 token = get_token()
+client_id = get_client_id()
+client_secret = get_client_secret()
 
 reddit_instance = praw.Reddit(
-    client_id="BAhuLkcUwAZ9Hw",
-    client_secret="MmqG10SklHjgS6pTTUQcp-EfgOE",
+    client_id=client_id,
+    client_secret=client_secret,
     user_agent="Uncle Dunk's Bot/0.0.1 by u/dsnk24"
 )
 
