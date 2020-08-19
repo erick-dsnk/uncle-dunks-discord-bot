@@ -1,3 +1,4 @@
 newsapi-python
 discord
 praw
+wikipedia
