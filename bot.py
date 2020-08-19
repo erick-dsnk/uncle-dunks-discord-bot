@@ -5,11 +5,13 @@ from random import randint, choice
 from newsapi import NewsApiClient
 from time import sleep
 import requests
+from wikipedia import page
+
 
 client = commands.Bot(command_prefix = '-')
 
-newsapi = NewsApiClient(api_key="8c85fb88a775493ba01b3ab63705bddf")
 
+################ GET TOKEN FUNCTIONS (SECURITY REASONS) ###############
 def get_token():
     with open("token.txt", 'r') as f:
         data = f.read()
@@ -31,15 +33,40 @@ def get_client_secret():
     
     return data
 
+def get_rapid_api_key():
+    with open("rapid_api_key.txt", "r") as f:
+        data = f.read()
+        f.close()
+    
+    return data
+
+def get_newsapi_key():
+    with open("newsapi_key.txt", "r") as f:
+        data = f.read()
+        f.close()
+    
+    return data
+
+############################################
+
+
+############ TOKENS / API KEYS #############
 token = get_token()
 client_id = get_client_id()
 client_secret = get_client_secret()
+newsapi_key = get_newsapi_key()
+############################################
 
+
+# Reddit instance for meme command
 reddit_instance = praw.Reddit(
     client_id=client_id,
     client_secret=client_secret,
     user_agent="Uncle Dunk's Bot/0.0.1 by u/dsnk24"
 )
+
+# NewsAPI instance for news and topnews command
+newsapi = NewsApiClient(api_key=newsapi_key)
 
 
 ############## PREDEFINED DISCORD EVENTS ##################
@@ -104,13 +131,21 @@ async def hexadecimal(ctx, arg):
         await chnl.send(f"{arg} is not an integer.")
 
 
+# Returns the latency of the bot.
+@client.command(pass_context=True)
+async def ping(ctx):
+    chnl = ctx.channel
+
+    await chnl.send(f'Pong! Time took to respond: {round((client.latency * 1000), 0)}')
+
+
 # Latest news on that subject from NewsAPI command
 @client.command(pass_context=True)
 async def news(ctx, arg):
 
     top_headlines = newsapi.get_top_headlines(
         q=f"{arg}",
-        sources="bbc,the-verge,abc-news,cnn,fox-news",
+        sources="bbc-news,the-verge,abc-news,cnn,fox-news,buzzfeed,google-news,cbs-news,entertainment-weekly,bleacher-report,nbc-news,new-york-magazine,the-wall-street-journal,the-washington-post",
         language="en"
     )
 
@@ -122,14 +157,19 @@ async def news(ctx, arg):
 
     sleep(1.3)
 
-    for i in range(1, 5):
-        article = articles[(i - 1)]
+    if len(articles) > 5:
+        iterations = 5
+    else:
+        iterations = len(articles)
+
+    for i in range(iterations):
+        article = articles[i]
 
         await chnl.send(
-            f"**Headline #{i}: {article['title']}**\n{article['description']}\n{article['url']}"
+            f"**Headline #{(i + 1)}: {article['title']}**\n{article['description']}\n{article['url']}"
         )
 
-        if i != 5:
+        if i != (iterations - 1):
             await chnl.send("-----------------------------------------------------------------")
         else:
             pass
@@ -142,9 +182,10 @@ async def news(ctx, arg):
 async def topnews(ctx):
     
     top_headlines = newsapi.get_top_headlines(
-        sources="bbc,the-verge,abc-news,cnn,fox-news",
+        sources="bbc-news,the-verge,abc-news,cnn,fox-news,buzzfeed,google-news,cbs-news,entertainment-weekly,bleacher-report,nbc-news,new-york-magazine,the-wall-street-journal,the-washington-post",
         language="en"
     )
+
 
     articles = top_headlines['articles']
 
@@ -161,14 +202,14 @@ async def topnews(ctx):
         iterations = len(articles)
 
 
-    for i in range(1, iterations):
-        article = articles[(i - 1)]
+    for i in range(iterations):
+        article = articles[i]
 
         await chnl.send(
-            f"**Headline #{i}: {article['title']}**\n{article['description']}\n{article['url']}"
+            f"**Headline #{(i + 1)}: {article['title']}**\n{article['description']}\n{article['url']}"
         )
 
-        if i != iterations:
+        if i != (iterations - 1):
             await chnl.send("-----------------------------------------------------------------")
         else:
             pass
@@ -176,27 +217,60 @@ async def topnews(ctx):
         sleep(3.7)
 
 
-# Current and 4-day weather forecast from OpenWeatherMap API command
-#@client.command(pass_context=True)
-#async def weather(ctx, city):
-#
-#    try:
-#        req = requests.get(url=f"https://pro.openweathermap.org/data/2.5/forecast/hourly?q={city}&appid=57a28fdb4970e359193164a1e8f77aa7")
-#
-#        weather_data = req.json()
-#
-#    except Exception as e:
-#        weather_data = None
-#
-#        print(f"An error occured while handling a weather command: {e}")
-#
-#    print(weather_data)
+# Weather command using the OpenWeatherMap API
+@client.command(pass_context=True)
+async def weather(ctx, city):
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid=57a28fdb4970e359193164a1e8f77aa7&units=metric'
+
+    chnl = ctx.channel
+
+    request = requests.get(url=url)
+
+    data = request.json()
+
+    weather_data = data['main']
+
+    curr_temp = weather_data['temp']
+    feels_like_temp = weather_data['feels_like']
+    humidity = weather_data['humidity']
+
+    city_data = data['name']
+
+    await chnl.send(f"Ok, here's the current weather data for {city_data}:")
+    sleep(1.2)
+    await chnl.send(
+        f"Current temperature: {curr_temp} Celsius\nIt feels like: {feels_like_temp} Celsius\nHumidity: {humidity}%"
+    )
+
+
+# Command for quickly searching wikipedia about a topic
+@client.command(pass_context=True)
+async def wikisearch(ctx, *, arg):
+    chnl = ctx.channel
+
+    wiki_page = page(arg)
+
+    title = wiki_page.title
+    desc = (wiki_page.content[:300] + "...") if len(wiki_page.content) > 303 else wiki_page.content
+    url = wiki_page.url
+
+    await chnl.send(
+        f"Here's what I found on Wikipedia about *{arg}*:"
+    )
+
+    sleep(2.0)
+
+    await chnl.send(
+        f"**{title}**\n{desc}\n\nFind out more about it here: {url}"
+    )
+
+
+
+
     
-    
-
-
-
 ###########################################################
+
+
 
 
 
@@ -249,20 +323,15 @@ async def meme(ctx):
 
     await chnl.send(submission.url)
 
+
 # Jokes from JokeAPIv2 command
 @client.command(pass_context=True)
 async def joke(ctx):
     url = "https://jokeapi-v2.p.rapidapi.com/joke/Any"
-    query_string = {
-        "contains":"C%2523",
-        "format":"json",
-        "blacklistFlags":"nsfw%2Cracist",
-        "idRange":"0-150",
-        "type":"single%2Ctwopart"
-    }
+
     headers = {
         'x-rapidapi-host': "jokeapi-v2.p.rapidapi.com",
-        'x-rapidapi-key': "9cc857bb2emsha6253ac9cc1d0bap155c68jsncb752fd4374e"
+        'x-rapidapi-key': get_rapid_api_key()
     }
 
     req = requests.get(url=url, headers=headers)
@@ -302,8 +371,6 @@ async def joke(ctx):
     
     else:
         print(f"Another type of joke found: {joke_data['type']}")
-
-
 
 #############################################
 
