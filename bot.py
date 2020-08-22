@@ -33,35 +33,42 @@ client = commands.Bot(command_prefix = '-')
 
 ################ GET TOKEN FUNCTIONS (SECURITY REASONS) ###############
 def get_token():
-    with open("tokens/token.txt", 'r') as f:
+    with open("tokens/token.key", 'r') as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_client_id():
-    with open("tokens/client_id.txt", "r") as f:
+    with open("tokens/client_id.key", "r") as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_client_secret():
-    with open("tokens/client_secret.txt", "r") as f:
+    with open("tokens/client_secret.key", "r") as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_rapid_api_key():
-    with open("tokens/rapid_api_key.txt", "r") as f:
+    with open("tokens/rapid_api_key.key", "r") as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_newsapi_key():
-    with open("tokens/newsapi_key.txt", "r") as f:
+    with open("tokens/newsapi_key.key", "r") as f:
+        data = f.read()
+        f.close()
+    
+    return data
+
+def get_weather_api_key():
+    with open("tokens/weather_api_key.key", "r") as f:
         data = f.read()
         f.close()
     
@@ -75,6 +82,7 @@ token = get_token()
 client_id = get_client_id()
 client_secret = get_client_secret()
 newsapi_key = get_newsapi_key()
+weather_key = get_weather_api_key()
 ############################################
 
 
@@ -304,7 +312,7 @@ async def weather(ctx, city):
     
 
     if city != None:
-        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid=57a28fdb4970e359193164a1e8f77aa7&units=metric'
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_key}&units=metric'
 
         request = requests.get(url=url)
 
