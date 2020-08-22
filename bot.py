@@ -24,6 +24,8 @@ from newsapi import NewsApiClient
 from time import sleep
 import requests
 from wikipedia import page
+from assets.incident_tracker import log_incident
+from datetime import datetime
 
 
 client = commands.Bot(command_prefix = '-')
@@ -31,35 +33,35 @@ client = commands.Bot(command_prefix = '-')
 
 ################ GET TOKEN FUNCTIONS (SECURITY REASONS) ###############
 def get_token():
-    with open("token.txt", 'r') as f:
+    with open("tokens/token.txt", 'r') as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_client_id():
-    with open("client_id.txt", "r") as f:
+    with open("tokens/client_id.txt", "r") as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_client_secret():
-    with open("client_secret.txt", "r") as f:
+    with open("tokens/client_secret.txt", "r") as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_rapid_api_key():
-    with open("rapid_api_key.txt", "r") as f:
+    with open("tokens/rapid_api_key.txt", "r") as f:
         data = f.read()
         f.close()
     
     return data
 
 def get_newsapi_key():
-    with open("newsapi_key.txt", "r") as f:
+    with open("tokens/newsapi_key.txt", "r") as f:
         data = f.read()
         f.close()
     
@@ -100,7 +102,7 @@ async def on_ready():
 ############## MATH / UTILITY COMMANDS ###################
 
 # Help command
-@client.command(pass_context=True, aliases=['cmdhelp'])
+@client.command(pass_context=True, aliases=['commands'])
 async def _help(ctx):
     chnl = ctx.channel
 
@@ -134,7 +136,8 @@ async def _help(ctx):
                 (Sends a top-notch joke from its extremely large joke database)
             - doggo
                 (It sends an image of a very cute doggo :3 )
-        """
+        """,
+        color=discord.Color((43, 241, 255))
     )
 
     await chnl.send(embed=standard_help_msg)
@@ -307,20 +310,50 @@ async def weather(ctx, city):
 
         data = request.json()
 
+        # Get the basic weather description from the json
+        additional_data = data['weather']
+        desc = additional_data[0]['description']
+
+        # The important weather data dictionary from the json file
         weather_data = data['main']
 
+        # All the values of the data in the dictionary
         curr_temp = weather_data['temp']
         feels_like_temp = weather_data['feels_like']
         humidity = weather_data['humidity']
+        atmospheric_pressure = weather_data['pressure']
 
+        # Wind speed
+        wind_data = data['wind']
+        wind_speed = wind_data['speed']
+
+        # Cloudiness
+        clouds_data = data['clouds']
+        cloudiness = clouds_data['all']
+
+        # Getting the city name from the api so it's a little more clean
         city_data = data['name']
 
-        await chnl.send(f"Ok, here's the current weather data for {city_data}:")
-        sleep(1.2)
-        await chnl.send(
-            f"Current temperature: {curr_temp} Celsius\nIt feels like: {feels_like_temp} Celsius\nHumidity: {humidity}%"
+        # Initializing an embed to send a nicer looking composite of all the weather data
+        embed = discord.Embed(
+            title=f'Weather data for {city_data}',
+            colour=discord.Color.from_rgb(43, 223, 255)
         )
-    
+
+        embed.add_field(
+            name="Basic weather",
+            value=f'**Description**: {desc}\n**Current temperature**: {curr_temp}\n**What it feels like**: {feels_like_temp}'
+        )
+
+        embed.add_field(
+            name="**Wind speed, Humidity, etc**",
+            value=f"**Wind speed**: {wind_speed} m/s\n**Humidity**: {humidity}%\n**Cloudiness**: {cloudiness}%\n**Atmospheric Pressure**: {round((atmospheric_pressure / 1013.25), 4)} atm ({atmospheric_pressure} hPa)"
+        )
+
+        await chnl.send(f"Ok, here's the weather information I found for {city_data}")
+        sleep(1.2)
+        await chnl.send(embed=embed)
+
     else:
         await chnl.send(":x: Missing required argument <city>")
 
@@ -482,15 +515,41 @@ async def joke(ctx):
 
 ########## MODERATION COMMANDS ##############
 
-# Command that silences every channel in case of a raid
-@client.command(pass_context=True)
-async def silence(ctx):
+# Command that silences every channel in case of a raid and gives staff time to react
+@client.command(pass_context=True, aliases=['s'])
+@commands.has_role("Staff")
+async def silence(ctx, reason="None specified."):
     members = ctx.guild.members
 
     silenced_role = get(ctx.guild.roles, name='Silenced')
 
+    server = ctx.guild.id
+
     for member in members:
         await member.add_roles(silenced_role)
+    
+    chnl = ctx.channel
+
+    await chnl.send(":white_check_mark: I silenced all the channels to give the staff time to react to this issue.")
+
+    log_incident("silence-channels", f"{reason}", f"{datetime.day}.{datetime.month}.{datetime.year} at {datetime.time}", server)
+
+
+
+# Command that unsilences all the channels after the staff handled the issues
+@client.command(pass_context=True, aliases=['us'])
+@commands.has_role("Staff")
+async def unsilence(ctx):
+    silenced_role = get(ctx.guild.roles, name='Silenced')
+
+    members = silenced_role.members
+
+    for member in members:
+        await member.remove_roles(silenced_role)
+    
+    chnl = ctx.channel
+    
+    await chnl.send(":white_check_mark: Unsilenced all channels.")
 
 
 client.run(token)
