@@ -39,20 +39,6 @@ def get_token():
     
     return data
 
-def get_client_id():
-    with open("tokens/client_id.key", "r") as f:
-        data = f.read()
-        f.close()
-    
-    return data
-
-def get_client_secret():
-    with open("tokens/client_secret.key", "r") as f:
-        data = f.read()
-        f.close()
-    
-    return data
-
 def get_rapid_api_key():
     with open("tokens/rapid_api_key.key", "r") as f:
         data = f.read()
@@ -79,19 +65,10 @@ def get_weather_api_key():
 
 ############ TOKENS / API KEYS #############
 token = get_token()
-client_id = get_client_id()
-client_secret = get_client_secret()
 newsapi_key = get_newsapi_key()
 weather_key = get_weather_api_key()
 ############################################
 
-
-# Reddit instance for meme command
-reddit_instance = praw.Reddit(
-    client_id=client_id,
-    client_secret=client_secret,
-    user_agent="Uncle Dunk's Bot/0.0.1 by u/dsnk24"
-)
 
 # NewsAPI instance for news and topnews command
 newsapi = NewsApiClient(api_key=newsapi_key)
@@ -388,247 +365,64 @@ async def wikisearch(ctx, *, arg):
     else:
         await chnl.send(":x: Missing required argument <search_query>")
 
+
+@client.command(pass_context=True, aliases=['coronavirus', 'cases', 'covid'])
+async def corona(ctx, *, country):
+    chnl = ctx.channel
+
+    if country != "":
+
+        try:
+            url = "https://covid-193.p.rapidapi.com/statistics"
+
+            querystring = {"country":country}
+
+            headers = {
+                'x-rapidapi-host': "covid-193.p.rapidapi.com",
+                'x-rapidapi-key': get_rapid_api_key()
+            }
+
+            response = requests.request("GET", url, headers=headers, params=querystring)
+
+            covid_data = response.json()
+
+            data = covid_data['response']
+            main_data = data[0]
+            
+            cases_data = main_data['cases']
+            death_data = main_data['deaths']
+
+            location = f"{main_data['country']}, {main_data['continent']}"
+            total_cases = cases_data['total']
+            new_cases = cases_data['new']
+            healed_cases = cases_data['recovered']
+            active_cases = cases_data['active']
+
+            new_deaths = death_data['new']
+            total_deaths = death_data['total']
+
+            date = main_data['day']
+
+
+            embed = discord.Embed(
+                title=f"COVID-19 Information for {main_data['country']}",
+                description=f'Total cases: {total_cases}\nActive Cases: {active_cases}\nNew cases: {new_cases}\nRecovered: {healed_cases}\n-----------------------------------------------\nTotal deaths: {total_deaths}\nNew Deaths: {new_deaths}'
+            )
+
+            await chnl.send(embed=embed)
+
+        
+        except Exception as e:
+            await chnl.send(":x: Sorry, I can't seem to fetch any information about it.")
+
+            print(e)
+
+
 ###########################################################
 
 
-
-
-
-################ ENTERTAINMENT COMMANDS ###################
-
-# Magic 8 Ball command
-@client.command(pass_context=True, aliases=["8ball"])
-async def _8ball(ctx, *, q):
-    chnl = ctx.channel
-
-    if q != None:
-
-        answers = [
-            "It is certain.",
-            "It is decidedly so.",
-            "Without a doubt.",
-            "Yes – definitely.",
-            "You may rely on it.",
-            "As I see it, yes.",
-            "Most likely.",
-            "Outlook good.",
-            "Yes.",
-            "Signs point to yes.",
-            "Reply hazy, try again.",
-            "Ask again later.",
-            "Better not tell you now.",
-            "Cannot predict now.",
-            "Concentrate and ask again.",
-            "Don't count on it.",
-            "My reply is no.",
-            "My sources say no.",
-            "Outlook not so good.",
-            "Very doubtful."
-        ]
-
-        response = choice(answers)
-
-        await chnl.send(response)
-    
-    else:
-        await chnl.send(":x: Missing required argument: <question>")
-
-
-# Meme from reddit command
-@client.command(pass_context=True)
-async def meme(ctx):
-    memes = reddit_instance.subreddit('memes').hot()
-
-    pick_number = randint(0, 10)
-
-    for i in range(0, pick_number):
-        submission = next(x for x in memes if not x.stickied)
-
-    chnl = ctx.channel
-
-    await chnl.send(submission.url)
-
-
-# A cute doggo from reddit command :3
-@client.command(pass_context=True)
-async def doggo(ctx):
-    dogs = reddit_instance.subreddit('doggos').hot()
-
-    pick_number = randint(0, 10)
-
-    for i in range(0, pick_number):
-        submission = next(x for x in dogs if not x.stickied)
-    
-    chnl = ctx.channel
-
-    await chnl.send(submission.url)
-
-
-# Jokes from JokeAPIv2 command
-@client.command(pass_context=True)
-async def joke(ctx):
-    url = "https://jokeapi-v2.p.rapidapi.com/joke/Any"
-
-    headers = {
-        'x-rapidapi-host': "jokeapi-v2.p.rapidapi.com",
-        'x-rapidapi-key': get_rapid_api_key()
-    }
-
-    req = requests.get(url=url, headers=headers)
-
-    joke_data = req.json()
-
-
-    openers = [
-        "Okay, here comes a good one...",
-        "I'm a bit rusty but I'll give it a shot.",
-        "Really?? No one has wanted to hear my jokes in so long, I'll be glad to tell you one!",
-        "Hmm, let me think... Oh I know just the one!",
-        "Ok fine, I'll tell you one, but don't make a habit out of it!"
-    ]
-
-    opener = choice(openers)
-
-    chnl = ctx.channel
-
-    if joke_data['type'] == "single":
-        await chnl.send(opener)
-
-        sleep(2.2)
-
-        await chnl.send(f"**{joke_data['joke']}**")
-
-    elif joke_data['type'] == "twopart":
-        await chnl.send(opener)
-
-        sleep(2.2)
-
-        await chnl.send(f"**{joke_data['setup']}**")
-
-        sleep(3.0)
-
-        await chnl.send(f"**{joke_data['delivery']}**")
-    
-    else:
-        print(f"Another type of joke found: {joke_data['type']}")
-
-#############################################
-
-
-
-
-
-########## MODERATION COMMANDS ##############
-
-# Command that silences every channel in case of a raid and gives staff time to react
-@client.command(pass_context=True, aliases=['s'])
-@commands.has_permissions(kick_members=True, ban_members=True)
-async def silence(ctx, reason="None specified."):
-    members = ctx.guild.members
-
-    silenced_role = get(ctx.guild.roles, name='Silenced')
-
-    server = ctx.guild.id
-
-    for member in members:
-        await member.add_roles(silenced_role)
-    
-    chnl = ctx.channel
-
-    await chnl.send(":white_check_mark: I silenced all the channels to give the staff time to react to this issue.")
-
-    log_incident("silence-channels", reason, f"{datetime.day}.{datetime.month}.{datetime.year} at {datetime.time}", server)
-
-
-
-# Command that unsilences all the channels after the staff handled the issues
-@client.command(pass_context=True, aliases=['us'])
-@commands.has_permissions(kick_members=True, ban_members=True)
-async def unsilence(ctx):
-    silenced_role = get(ctx.guild.roles, name='Silenced')
-
-    members = silenced_role.members
-
-    for member in members:
-        await member.remove_roles(silenced_role)
-    
-    chnl = ctx.channel
-    
-    await chnl.send(":white_check_mark: Unsilenced all channels.")
-
-
-# Kick command
-@client.command(pass_context=True)
-@commands.has_permissions(kick_members=True)
-async def kick(ctx, member: discord.Member, *, reason="None specified."):
-    dm_chnl = await member.create_dm()
-
-    chnl = ctx.channel
-
-    server = ctx.guild.name
-    server_id = ctx.guild.id
-
-    try:
-        await dm_chnl.send(f"The staff have decided to kick you from {server} for reason: {reason}")
-        await member.kick(reason=reason)
-
-        log_incident('ban_member', reason, f"{datetime.day()}.{datetime.month()}.{datetime.year()} at {datetime.time()}", server_id)
-
-        await chnl.send(f":white_check_mark: Kicked user {member.name}#{member.discriminator} for reason: {reason}. Also logged incident, to see previous incidents in this server, type `-incidents` (WIP)")
-
-    except Exception as e:
-        print(e)
-
-        chnl.send(f":x: Couldn't kick user {member}.")
-
-
-# Ban command
-@client.command(pass_context=True)
-@commands.has_permissions(ban_members=True)
-async def ban(ctx, member: discord.Member, *, reason="None specified."):
-    dm_chnl = await member.create_dm()
-
-    chnl = ctx.channel
-
-    server = ctx.guild.name
-    server_id = ctx.guild.id
-
-    try:
-        await dm_chnl.send(f"The staff have decided to ban you from {server} for reason: {reason}")
-        await member.ban(reason=reason)
-
-        log_incident('ban_member', reason, f"{datetime.day()}.{datetime.month()}.{datetime.year()} at {datetime.time()}", server_id)
-
-        await chnl.send(f":white_check_mark: Banned user {member.name}#{member.discriminator} for reason: {reason}. Also logged incident, to see previous logs in this server, type `-incidents` (WIP)")
-
-    except Exception as e:
-        print(e)
-
-        chnl.send(f":x: Couldn't ban user {member}.")
-
-
-# Show all incidents in that server command
-@client.command(pass_context=True)
-@commands.has_permissions(kick_members=True, ban_members=True)
-async def incidents(ctx):
-    _incidents = retrieve_incidents(ctx.guild.id)
-
-    chnl = ctx.channel
-
-    if _incidents != None:
-
-        iterations = 0
-
-        if len(_incidents) > 30:
-            iterations = 30
-        else:
-            iterations = len(_incidents)
-
-        for i in range(iterations):
-            await chnl.send(f"Incident: {_incidents[i]['incident']}\nReason: {_incidents[i]['reason']}\nDate and time: {_incidents[i]['time']}")
-
-    else:
-        await chnl.send(":white_check_mark: I couldn't find any incidents, good job on managing this server so well!")
+client.load_extension('cogs.moderation')
+client.load_extension('cogs.entertainment')
 
 
 client.run(token)
