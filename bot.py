@@ -24,7 +24,7 @@ from newsapi import NewsApiClient
 from time import sleep
 import requests
 from wikipedia import page
-from assets.incident_tracker import log_incident
+from assets.incident_tracker import log_incident, retrieve_incidents
 from datetime import datetime
 
 
@@ -68,7 +68,7 @@ def get_newsapi_key():
     return data
 
 def get_weather_api_key():
-    with open("tokens/weather_api_key.key", "r") as f:
+    with open("tokens/weather_api_token.key", "r") as f:
         data = f.read()
         f.close()
     
@@ -116,7 +116,6 @@ async def _help(ctx):
 
     standard_help_msg = discord.Embed(
         title='Commands Help',
-        type='rich',
         description="""
             **Utility and Math**
             - octal <number>
@@ -144,8 +143,7 @@ async def _help(ctx):
                 (Sends a top-notch joke from its extremely large joke database)
             - doggo
                 (It sends an image of a very cute doggo :3 )
-        """,
-        color=discord.Color((43, 241, 255))
+        """
     )
 
     await chnl.send(embed=standard_help_msg)
@@ -176,7 +174,6 @@ async def octal(ctx, arg):
 @client.command(pass_context=True)
 async def binary(ctx, arg):
     chnl = ctx.channel
-
 
     if arg != None:
         try:
@@ -349,7 +346,7 @@ async def weather(ctx, city):
         )
 
         embed.add_field(
-            name="Basic weather",
+            name="**Basic weather**",
             value=f'**Description**: {desc}\n**Current temperature**: {curr_temp}\n**What it feels like**: {feels_like_temp}'
         )
 
@@ -525,7 +522,7 @@ async def joke(ctx):
 
 # Command that silences every channel in case of a raid and gives staff time to react
 @client.command(pass_context=True, aliases=['s'])
-@commands.has_role("Staff")
+@commands.has_permissions(kick_members=True, ban_members=True)
 async def silence(ctx, reason="None specified."):
     members = ctx.guild.members
 
@@ -540,13 +537,13 @@ async def silence(ctx, reason="None specified."):
 
     await chnl.send(":white_check_mark: I silenced all the channels to give the staff time to react to this issue.")
 
-    log_incident("silence-channels", f"{reason}", f"{datetime.day}.{datetime.month}.{datetime.year} at {datetime.time}", server)
+    log_incident("silence-channels", reason, f"{datetime.day}.{datetime.month}.{datetime.year} at {datetime.time}", server)
 
 
 
 # Command that unsilences all the channels after the staff handled the issues
 @client.command(pass_context=True, aliases=['us'])
-@commands.has_role("Staff")
+@commands.has_permissions(kick_members=True, ban_members=True)
 async def unsilence(ctx):
     silenced_role = get(ctx.guild.roles, name='Silenced')
 
@@ -558,6 +555,80 @@ async def unsilence(ctx):
     chnl = ctx.channel
     
     await chnl.send(":white_check_mark: Unsilenced all channels.")
+
+
+# Kick command
+@client.command(pass_context=True)
+@commands.has_permissions(kick_members=True)
+async def kick(ctx, member: discord.Member, *, reason="None specified."):
+    dm_chnl = await member.create_dm()
+
+    chnl = ctx.channel
+
+    server = ctx.guild.name
+    server_id = ctx.guild.id
+
+    try:
+        await dm_chnl.send(f"The staff have decided to kick you from {server} for reason: {reason}")
+        await member.kick(reason=reason)
+
+        log_incident('ban_member', reason, f"{datetime.day()}.{datetime.month()}.{datetime.year()} at {datetime.time()}", server_id)
+
+        await chnl.send(f":white_check_mark: Kicked user {member.name}#{member.discriminator} for reason: {reason}. Also logged incident, to see previous incidents in this server, type `-incidents` (WIP)")
+
+    except Exception as e:
+        print(e)
+
+        chnl.send(f":x: Couldn't kick user {member}.")
+
+
+# Ban command
+@client.command(pass_context=True)
+@commands.has_permissions(ban_members=True)
+async def ban(ctx, member: discord.Member, *, reason="None specified."):
+    dm_chnl = await member.create_dm()
+
+    chnl = ctx.channel
+
+    server = ctx.guild.name
+    server_id = ctx.guild.id
+
+    try:
+        await dm_chnl.send(f"The staff have decided to ban you from {server} for reason: {reason}")
+        await member.ban(reason=reason)
+
+        log_incident('ban_member', reason, f"{datetime.day()}.{datetime.month()}.{datetime.year()} at {datetime.time()}", server_id)
+
+        await chnl.send(f":white_check_mark: Banned user {member.name}#{member.discriminator} for reason: {reason}. Also logged incident, to see previous logs in this server, type `-incidents` (WIP)")
+
+    except Exception as e:
+        print(e)
+
+        chnl.send(f":x: Couldn't ban user {member}.")
+
+
+# Show all incidents in that server command
+@client.command(pass_context=True)
+@commands.has_permissions(kick_members=True, ban_members=True)
+async def incidents(ctx):
+    _incidents = retrieve_incidents(ctx.guild.id)
+
+    chnl = ctx.channel
+
+    if _incidents != None:
+
+        iterations = 0
+
+        if len(_incidents) > 30:
+            iterations = 30
+        else:
+            iterations = len(_incidents)
+
+        for i in range(iterations):
+            await chnl.send(f"Incident: {_incidents[i]['incident']}\nReason: {_incidents[i]['reason']}\nDate and time: {_incidents[i]['time']}")
+
+    else:
+        await chnl.send(":white_check_mark: I couldn't find any incidents, good job on managing this server so well!")
 
 
 client.run(token)
