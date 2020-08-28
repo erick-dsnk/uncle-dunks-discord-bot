@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-from assets.incident_tracker import log_incident, retrieve_incidents
+from helpers.incident_tracker import log_incident, retrieve_incidents
 from discord.utils import get
 
 class Moderation(commands.Cog):
