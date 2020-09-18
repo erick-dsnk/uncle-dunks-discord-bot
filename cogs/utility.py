@@ -42,14 +42,14 @@ class Utility(commands.Cog):
         self.bot = bot
 
     # Returns the latency of the bot.
-    @commands.command(pass_context=True)
+    @commands.command()
     async def ping(self, ctx):
         chnl = ctx.channel
 
         await chnl.send(f'Pong! Time took to respond: {round((self.bot.latency * 1000), 0)}ms')
 
     # Help command
-    @commands.command(pass_context=True, aliases=['commands'])
+    @commands.command(aliases=['commands'])
     async def _help(self, ctx):
         chnl = ctx.channel
 
@@ -103,7 +103,7 @@ class Utility(commands.Cog):
         await chnl.send(embed=standard_help_msg)
 
     # Latest news on that subject from NewsAPI command
-    @commands.command(pass_context=True)
+    @commands.command()
     async def news(self, ctx, topic):
         chnl = ctx.channel
 
@@ -145,7 +145,7 @@ class Utility(commands.Cog):
 
 
     # Latest news in general from NewsAPI command
-    @commands.command(pass_context=True)
+    @commands.command()
     async def topnews(self, ctx):
         
         top_headlines = newsapi.get_top_headlines(
@@ -185,7 +185,7 @@ class Utility(commands.Cog):
 
 
     # Weather command using the OpenWeatherMap API
-    @commands.command(pass_context=True)
+    @commands.command()
     async def weather(self, ctx, city):
         chnl = ctx.channel
         
@@ -246,7 +246,7 @@ class Utility(commands.Cog):
 
 
     # Command for quickly searching wikipedia about a topic
-    @client.command(pass_context=True)
+    @commands.command()
     async def wikisearch(self, ctx, *, arg):
         chnl = ctx.channel
 
@@ -271,7 +271,7 @@ class Utility(commands.Cog):
             await chnl.send(":x: Missing required argument <search_query>")
 
 
-    @client.command(pass_context=True, aliases=['coronavirus', 'cases', 'covid'])
+    @commands.command(aliases=['coronavirus', 'cases', 'covid'])
     async def corona(self, ctx, *, country):
         chnl = ctx.channel
 
@@ -324,3 +324,8 @@ class Utility(commands.Cog):
     
     def remindme(self, ctx, dt, *, reminder):
         pass # WIP
+
+
+
+def setup(bot):
+    bot.add_cog(Utility(bot))

@@ -52,6 +52,7 @@ client.load_extension('cogs.moderation')
 client.load_extension('cogs.entertainment')
 client.load_extension('cogs.utility')
 client.load_extension('cogs.math')
+client.load_extension('cogs.music')
 ############################################
 
 

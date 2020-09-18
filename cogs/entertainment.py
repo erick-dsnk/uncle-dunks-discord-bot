@@ -47,7 +47,7 @@ class Entertainment(commands.Cog):
 
 
     # Magic 8 Ball command
-    @commands.command(pass_context=True, aliases=["8ball"])
+    @commands.command(aliases=["8ball"])
     async def _8ball(self, ctx, *, q):
         chnl = ctx.channel
 
@@ -85,7 +85,7 @@ class Entertainment(commands.Cog):
 
 
     # Meme from reddit command
-    @commands.command(pass_context=True)
+    @commands.command()
     async def meme(self, ctx):
         memes = reddit_instance.subreddit('memes').hot()
 
@@ -100,7 +100,7 @@ class Entertainment(commands.Cog):
 
 
     # A cute doggo from reddit command :3
-    @commands.command(pass_context=True)
+    @commands.command()
     async def doggo(self, ctx):
         dogs = reddit_instance.subreddit('doggos').hot()
 
@@ -115,7 +115,7 @@ class Entertainment(commands.Cog):
 
 
     # Jokes from JokeAPIv2 command
-    @commands.command(pass_context=True)
+    @commands.command()
     async def joke(self, ctx):
         url = "https://jokeapi-v2.p.rapidapi.com/joke/Any"
 

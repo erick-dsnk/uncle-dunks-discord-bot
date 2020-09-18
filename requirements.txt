@@ -2,3 +2,4 @@ newsapi-python
 discord
 praw
 wikipedia
+youtube-dl

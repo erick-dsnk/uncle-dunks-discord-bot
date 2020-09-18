@@ -8,7 +8,7 @@ class Math(commands.Cog):
 
 
     # Octal representation of a number command
-    @client.command(pass_context=True)
+    @commands.command()
     async def octal(self, ctx, arg):
         chnl = ctx.channel
         
@@ -28,7 +28,7 @@ class Math(commands.Cog):
 
 
     # Binary code of a number command
-    @client.command(pass_context=True)
+    @commands.command()
     async def binary(self, ctx, arg):
         chnl = ctx.channel
 
@@ -49,7 +49,7 @@ class Math(commands.Cog):
 
 
     # Hexadecimal code of a number command
-    @client.command(pass_context=True, aliases=["hex"])
+    @commands.command(aliases=["hex"])
     async def hexadecimal(self, ctx, arg):
         chnl = ctx.channel
 
@@ -67,3 +67,8 @@ class Math(commands.Cog):
         
         else:
             await chnl.send(":x: Missing required argument <number>")
+
+
+def setup(bot):
+    bot.add_cog(Math(bot))
+
