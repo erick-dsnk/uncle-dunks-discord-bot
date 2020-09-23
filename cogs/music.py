@@ -7,6 +7,10 @@ import shutil
 import os
 
 
+#if not discord.opus.is_loaded():
+#    discord.opus.load_opus('libopus.so')
+
+
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -42,9 +46,7 @@ class Music(commands.Cog):
     
 
     @commands.command(aliases=['p'])
-    async def play(self, ctx, *, search_query):
-        url = search(search_query)
-        
+    async def play(self, ctx, url):        
         def check_queue():
             Queue_infile = os.path.isdir("./Queue")
 
@@ -178,6 +180,7 @@ class Music(commands.Cog):
         else:
             await ctx.channel.send(':x: No music is playing!')
         
+
     @commands.command(aliases=['resume'])
     async def unpause(self, ctx):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
@@ -209,9 +212,7 @@ class Music(commands.Cog):
             await ctx.channel.send(':x: No track is playing!')
 
     @commands.command(aliases=['q'])
-    async def queue(self, ctx, *, search_query):
-        url = search(search_query)
-
+    async def queue(self, ctx, url):
         Queue_infile = os.path.isdir('./Queue')
 
         if Queue_infile is False:

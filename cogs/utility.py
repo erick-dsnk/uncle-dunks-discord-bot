@@ -50,7 +50,7 @@ class Utility(commands.Cog):
 
     # Help command
     @commands.command(aliases=['commands'])
-    async def _help(self, ctx):
+    async def help(self, ctx):
         chnl = ctx.channel
 
         standard_help_msg = discord.Embed(
@@ -322,8 +322,14 @@ class Utility(commands.Cog):
 
                 print(e)
     
-    def remindme(self, ctx, dt, *, reminder):
-        pass # WIP
+
+    @commands.command()
+    async def avatar(self, ctx, member: discord.Member):
+        embed = discord.Embed(title=f"{member.name}#{member.discriminator}'s avatar")
+
+        embed.set_image(url=member.avatar_url)
+
+        await ctx.channel.send(embed=embed)
 
 
 

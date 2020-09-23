@@ -11,8 +11,7 @@ class Moderation(commands.Cog):
     
 
     # Command that silences every channel in case of a raid and gives staff time to react
-    @commands.command(
-        aliases=['s'])
+    @commands.command(aliases=['s'])
     @commands.has_permissions(kick_members=True, ban_members=True)
     async def silence(self, ctx, reason="None specified."):
         members = ctx.guild.members
@@ -33,8 +32,7 @@ class Moderation(commands.Cog):
 
 
     # Command that unsilences all the channels after the staff handled the issues
-    @commands.command(
-        aliases=['us'])
+    @commands.command(aliases=['us'])
     @commands.has_permissions(kick_members=True, ban_members=True)
     async def unsilence(self, ctx):
         silenced_role = get(ctx.guild.roles, name='Silenced')
@@ -50,9 +48,7 @@ class Moderation(commands.Cog):
 
 
     # Kick command
-    @commands.command(
-        
-    )
+    @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason="None specified."):
         dm_chnl = await member.create_dm()
@@ -77,9 +73,7 @@ class Moderation(commands.Cog):
 
 
     # Ban command
-    @commands.command(
-        
-    )
+    @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason="None specified."):
         dm_chnl = await member.create_dm()
@@ -104,9 +98,7 @@ class Moderation(commands.Cog):
 
 
     # Show all incidents in that server command
-    @commands.command(
-        
-    )
+    @commands.command()
     @commands.has_permissions(kick_members=True, ban_members=True)
     async def incidents(self, ctx):
         _incidents = retrieve_incidents(ctx.guild.id)

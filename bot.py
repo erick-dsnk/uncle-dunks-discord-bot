@@ -26,7 +26,7 @@ from wikipedia import page
 from datetime import datetime
 
 
-client = commands.Bot(command_prefix = '-')
+client = commands.Bot(command_prefix = '-', help_command=None)
 
 
 ################ GET TOKEN FUNCTION ###############
@@ -40,19 +40,14 @@ def get_token():
 token = get_token()
 ############################################
 
-
-# Bot ready event
-@client.event
-async def on_ready():
-    print("Uncle Dunk's bot is in the house and he ain't leavin")
-
-
 ################## COGS ####################
 client.load_extension('cogs.moderation')
 client.load_extension('cogs.entertainment')
 client.load_extension('cogs.utility')
 client.load_extension('cogs.math')
 client.load_extension('cogs.music')
+client.load_extension('cogs.settings')
+client.load_extension('cogs.events')
 ############################################
 
 
