@@ -46,7 +46,7 @@ class Utility(commands.Cog):
     async def ping(self, ctx):
         chnl = ctx.channel
 
-        await chnl.send(f'Pong! Time took to respond: {round((self.bot.latency * 1000), 0)}ms')
+        await chnl.send(f'Pong! Time took to respond: {round((self.bot.latency * 1000))}ms')
 
     # Help command
     @commands.command(aliases=['commands'])
