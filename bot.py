@@ -15,6 +15,7 @@
 
 import discord
 from discord.ext import commands
+import os
 
 client = commands.Bot(command_prefix = '-')
 
@@ -33,15 +34,9 @@ token = get_token()
 ############################################
 
 ################## COGS ####################
-client.load_extension('cogs.moderation')
-client.load_extension('cogs.entertainment')
-client.load_extension('cogs.utility')
-client.load_extension('cogs.math')
-client.load_extension('cogs.music')
-client.load_extension('cogs.settings')
-client.load_extension('cogs.events')
-client.load_extension('cogs.code_eval')
-client.load_extension('cogs.apod')
+for ext in os.listdir('./exts'):
+    if ext.endswith('.py'):
+        client.load_extension(f'exts.{ext.strip(".py")}')
 ############################################
 
 
