@@ -41,6 +41,7 @@ client.load_extension('cogs.music')
 client.load_extension('cogs.settings')
 client.load_extension('cogs.events')
 client.load_extension('cogs.code_eval')
+client.load_extension('cogs.apod')
 ############################################
 
 
