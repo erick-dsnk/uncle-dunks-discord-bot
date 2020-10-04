@@ -4,6 +4,8 @@ from newsapi import NewsApiClient
 from time import sleep
 import requests
 from wikipedia import page
+import psutil
+from discord.ext.commands import Context
 
 
 def get_newsapi_key():
@@ -38,73 +40,102 @@ newsapi = NewsApiClient(api_key=newsapi_key)
 
 
 class Utility(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     # Returns the latency of the bot.
     @commands.command()
-    async def ping(self, ctx):
+    async def ping(self, ctx: Context):
         chnl = ctx.channel
 
         await chnl.send(f'Pong! Time took to respond: {round((self.bot.latency * 1000))}ms')
 
+
     # Help command
     @commands.command(aliases=['commands'])
-    async def help(self, ctx):
+    async def help(self, ctx: Context):
         chnl = ctx.channel
 
         standard_help_msg = discord.Embed(
             title='Commands Help',
-            description="""
-                **Utility and Math**
-                - octal <number>
-                    (It calculates and sends the octal representation of the given number)
-                
-                - hex <number>
-                    (It calculates and sends the hexadecimal code of the given number.)
-                
-                - binary <binary>
-                    (It calculates and sends the binary code of the given number.)
-                
-                - ping
-                    (Sends the latency of the bot.)
-                
-                - news <topic>
-                    (It returns the top 5 headlines that it can find on that topic.)
-                
-                - topnews
-                    (This one doesn't take a topic, it returns the top 5 most read articles it can find on that day.)
-                
-                - weather <city>
-                    (It sends you basic current weather data, like temperature, humidity, and what it feels like)
-                
-                - wikisearch <topic>
-                    (It fetches the top article on Wikipedia regarding that topic and sends it in chat)
+            description="---------------------------------------------------------",
+            color=discord.Color.blurple()
+        )
 
-                - coronavirus <country>
-                    ( Aliases: cases, corona, covid. It sends you the current number of cases and deaths caused by COVID-19 in the country specified. Stay safe out there!)
+        standard_help_msg.add_field(
+            name="**Entertainment**",
+            value="""
 
-                **Fun**
-                - 8ball <question>
-                    (It does what every Magic 8Ball does: it answers any question you have with crazy accuracy! Just kidding don't use it to make important decisions :) )
-                
-                - meme
-                    (It sends a hot meme from Reddit)
-                
-                - joke
-                    (Sends a top-notch joke from its extremely large joke database)
-                
-                - doggo
-                    (It sends an image of a very cute doggo :3 )
-            """,
-            color=discord.Color.blurple
+-**meme**  --> Sends a hot meme from Reddit!
+-**doggo**  --> Sends cute pictures of doggos :3
+-**joke**  --> Tells a top notch joke!
+-**8ball** <question>  --> Ask the magic 8 Ball a question!
+
+            """
+        )
+
+        standard_help_msg.add_field(
+            name="**Utility**",
+            value="""
+
+-**help**  --> Shows this message.
+-**ping**  --> Sends the latency of the bot!
+-**news** <topic>  --> Sends you the top 5 headlines on the specified topic!
+-**topnews**  --> It sends the top 5 headlines in general.
+-**wikisearch** <query>  --> Search Wikipedia for a certain topic right from your Discord chat!
+-**weather** <country>  --> Tells you the latest weather information in the specified country!
+-**corona** <country>  --> Sends the overview of the coronavirus pandemic situation in the given country. Stay safe everyone!
+-**avatar** <member>  --> It sends you the profile picture of the given user. If no user is specified, it will send you your profile picture.
+   
+            """
+        )
+
+        standard_help_msg.add_field(
+            name="**Math**",
+            value="""
+
+-**hex** <number>  --> Returns the hexadecimal representation of the given number.
+-**binary** <number>  --> Returns the binary representation of the given number.
+-**octal** <number>  --> Returns the octal representation of the given number.
+
+            """
+        )
+
+        standard_help_msg.add_field(
+            name="**Music**",
+            value="""
+
+-**join**  --> Joins the voice channel you're in.
+-**leave**  --> Leaves the voice channel.
+-**play** <url>  --> Plays the audio of the given youtube video!
+-**queue** <url>  --> Adds a song to the queue.
+-**skip**  --> Skips the playing song.
+-**pause**  --> Pauses the song.
+-**unpause**  --> Unpauses the song.
+
+            """
+        )
+
+        standard_help_msg.add_field(
+            name="**Moderation**",
+            value="""
+-**silence**  --> Mutes all members in case of a raid, to give the staff time to react to the incident.
+-**unsilence**  --> Unmutes all members.
+-**kick** <user> [reason]  --> Kicks the specified user.
+-**ban** <user> [reason]  --> Bans the specified user.
+-**incidents**  --> The bot logs all moderation related incidents (i.e. kicking, silencing, etc.). This command shows the latest incidents.
+            """
+        )
+
+        standard_help_msg.set_footer(
+            text="Arguments surrounded in <> are required arguments and arguments surrouned in [] are optional. Don't include the brackets!"
         )
 
         await chnl.send(embed=standard_help_msg)
 
     # Latest news on that subject from NewsAPI command
     @commands.command()
-    async def news(self, ctx, topic):
+    async def news(self, ctx: Context, topic):
         chnl = ctx.channel
 
         if topic != None:
@@ -146,7 +177,7 @@ class Utility(commands.Cog):
 
     # Latest news in general from NewsAPI command
     @commands.command()
-    async def topnews(self, ctx):
+    async def topnews(self, ctx: Context):
         
         top_headlines = newsapi.get_top_headlines(
             sources="bbc-news,the-verge,abc-news,cnn,fox-news,buzzfeed,google-news,cbs-news,entertainment-weekly,bleacher-report,nbc-news,new-york-magazine,the-wall-street-journal,the-washington-post",
@@ -186,7 +217,7 @@ class Utility(commands.Cog):
 
     # Weather command using the OpenWeatherMap API
     @commands.command()
-    async def weather(self, ctx, city):
+    async def weather(self, ctx: Context, city):
         chnl = ctx.channel
         
 
@@ -247,7 +278,7 @@ class Utility(commands.Cog):
 
     # Command for quickly searching wikipedia about a topic
     @commands.command()
-    async def wikisearch(self, ctx, *, arg):
+    async def wikisearch(self, ctx: Context, *, arg):
         chnl = ctx.channel
 
         if arg != None:
@@ -272,7 +303,7 @@ class Utility(commands.Cog):
 
 
     @commands.command(aliases=['coronavirus', 'cases', 'covid'])
-    async def corona(self, ctx, *, country):
+    async def corona(self, ctx: Context, *, country):
         chnl = ctx.channel
 
         if country != "":
@@ -324,12 +355,111 @@ class Utility(commands.Cog):
     
 
     @commands.command()
-    async def avatar(self, ctx, member: discord.Member):
-        embed = discord.Embed(title=f"{member.name}#{member.discriminator}'s avatar")
+    async def avatar(self, ctx: Context, member: discord.Member = None):
+        if member:
+            embed = discord.Embed(title=f"{member.name}#{member.discriminator}'s avatar")
 
-        embed.set_image(url=member.avatar_url)
+            embed.set_image(url=member.avatar_url)
+
+            await ctx.channel.send(embed=embed)
+        
+        else:
+            embed = discord.Embed(title=f"{ctx.message.author.name}#{ctx.message.author.discriminator}'s avatar")
+
+            embed.set_image(url=ctx.message.author.avatar_url)
+
+            await ctx.channel.send(embed=embed)
+
+
+    @commands.command(aliases=['bot', 'botinfo', 'i'])
+    async def info(self, ctx: Context):
+        embed = discord.Embed(
+            title="**Bot Info**",
+            description="\n",
+            color=discord.Color.blurple()
+        )
+
+        embed.add_field(
+            name=":desktop: **Memory Usage**",
+            value=f"CPU Usage: `{psutil.cpu_percent()}%`\nVRAM Usage: `{psutil.virtual_memory().percent}%`",
+            inline=True
+        )
+
+        embed.add_field(
+            name=":floppy_disk: **Bot's Developer**",
+            value="`saint#5622`",
+            inline=True
+        )
+
+        embed.add_field(
+            name="**Servers**",
+            value=f"`{len(self.bot.guilds)}`",
+            inline=True
+        )
+
+        embed.add_field(
+            name=":tools: **Source and Framework**",
+            value="Framework: `discord.py`\nSource: [Go to GitHub](https://github.com/erick-dsnk/uncle-dunks-discord-bot)",
+            inline=True
+        )
+
+        embed.set_footer(
+            text="Developed by saint#5622"
+        )
 
         await ctx.channel.send(embed=embed)
+    
+
+    @commands.command()
+    async def userinfo(self, ctx: Context, user: discord.Member = None):
+        if user == None:
+            user = ctx.author
+        
+        embed = discord.Embed(
+            title=f"{user.mention}",
+            description="\n",
+            color=discord.Color.blurple()
+        )
+
+        embed.add_field(
+            name=":clock: **Joined Server:**",
+            value=f"`{user.joined_at.split('.')[0].split(' ')[0]}`@`{user.joined_at.split('.')[0].split(' ')[1]}`",
+            inline=True
+        )
+
+        embed.add_field(
+            name="**Account created:**",
+            value=f"`{user.created_at.split('.')[0].split(' ')[0]}`@`{user.created_at.split('.')[0].split(' ')[1]}`"
+        )
+
+        embed.add_field(
+            name=":military_medal: **Top Role:**",
+            value=f"{user.top_role.mention}",
+            inline=True
+        )
+
+        if user.status == discord.Status.online:
+            embed.add_field(
+                name="**User Status**",
+                value=":green_circle: Online"
+            )
+        
+        elif user.status == discord.Status.do_not_disturb:
+            embed.add_field(
+                name="**User Status**",
+                value=":red_circle: Do Not Disturb"
+            )
+        
+        elif user.status == discord.Status.offline or user.status == discord.Status.invisible:
+            embed.add_field(
+                name="**User Status**",
+                value=":black_circle: Offline/Invisible"
+            )
+
+
+    @commands.command(aliases=['sv', 'server', 'svinfo', 'svi'])
+    async def serverinfo(self, ctx: Context):
+        await ctx.send(":clock: Command is work-in-progress!")
 
 
 

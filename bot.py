@@ -13,20 +13,12 @@
 #   limitations under the License.
 
 
-
-
 import discord
 from discord.ext import commands
-from discord.utils import get
-import praw
-from random import randint, choice
-from time import sleep
-import requests
-from wikipedia import page
-from datetime import datetime
 
+client = commands.Bot(command_prefix = '-')
 
-client = commands.Bot(command_prefix = '-', help_command=None)
+client.remove_command('help')
 
 
 ################ GET TOKEN FUNCTION ###############

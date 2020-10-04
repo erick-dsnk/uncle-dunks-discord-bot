@@ -5,10 +5,12 @@ from helpers.yt_searcher import search
 from discord.utils import get
 import shutil
 import os
+import sys
 
 
-if not discord.opus.is_loaded():
-    discord.opus.load_opus('libopus.so')
+if sys.platform != 'win32':
+    if not discord.opus.is_loaded():
+        discord.opus.load_opus('libopus.so')
 
 
 class Music(commands.Cog):
@@ -46,9 +48,7 @@ class Music(commands.Cog):
     
 
     @commands.command(aliases=['p'])
-    async def play(self, ctx, *, query):        
-        url = search(query)
-        
+    async def play(self, ctx, url):
         def check_queue():
             Queue_infile = os.path.isdir("./Queue")
 
@@ -214,9 +214,7 @@ class Music(commands.Cog):
             await ctx.channel.send(':x: No track is playing!')
 
     @commands.command(aliases=['q'])
-    async def queue(self, ctx, *, query):
-        url = search(query)
-
+    async def queue(self, ctx, url):
         Queue_infile = os.path.isdir('./Queue')
 
         if Queue_infile is False:

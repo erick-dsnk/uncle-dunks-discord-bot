@@ -10,12 +10,8 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('Uncle Dunk\'s bot is in the house and he ain\'t leaving')
-    
+        await self.bot.change_presence(activity=discord.Activity(name="||| -help to show the list of commands! |||"), status=discord.Status.dnd)
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        await self.bot.process_commands(message)
-    
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
