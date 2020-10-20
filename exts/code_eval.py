@@ -148,6 +148,8 @@ class Eval(Cog):
             self.ln = 0
             self.env = {}
             return await ctx.send("```Reset history!```")
+        
+        print(code)
 
         env = {
             "message": ctx.message,
@@ -169,17 +171,18 @@ class Eval(Cog):
 async def func():
     try:
         with contextlib.redirect_stdout(self.stdout):
-{0}
+            {}
         if '_' in locals():
             if inspect.isawaitable(_):
                 _ = await _
             return _
     finally:
         self.env.update(locals())
-""".format(textwrap.indent(code, '            '))
+""".format(code)
+        print(code_)
 
         try:
-            exec(code_, self.env)  # noqa: B102,S102
+            exec(code_, self.env)
             func = self.env['func']
             res = await func()
 
@@ -199,20 +202,20 @@ async def func():
 
         if len(out) > truncate_index:
             await ctx.send(
-                f"```py\n{out[:truncate_index]}\n```"
+                f"```\n{out[:truncate_index]}\n```"
                 f"... response truncated;",
                 embed=embed
             )
             return
 
-        await ctx.send(f"```py\n{out}```", embed=embed)
+        await ctx.send(f"```\n{out}```", embed=embed)
 
 
     @commands.command(aliases=['e', 'eva', 'code', 'evalcode', 'py', 'python'])
     async def eval(self, ctx: Context, *, code: str):
-        if '```python' or '```py' in code:
-            code = "\n".join(code.split("\n")[1:])
-        
+        if '```py' in code or '```python' in code:
+            code = "".join(code.split('\n')[:1])
+
         code = code.strip('`')
 
         banned_elems = [

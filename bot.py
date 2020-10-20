@@ -34,9 +34,13 @@ token = get_token()
 ############################################
 
 ################## COGS ####################
-for ext in os.listdir('./exts'):
-    if ext.endswith('.py'):
-        client.load_extension(f'exts.{ext.strip(".py")}')
+client.load_extension('exts.code_eval')
+client.load_extension('exts.entertainment')
+client.load_extension('exts.events')
+client.load_extension('exts.math')
+client.load_extension('exts.moderation')
+client.load_extension('exts.music')
+client.load_extension('exts.utility')
 ############################################
 
 

@@ -58,7 +58,6 @@ class Utility(commands.Cog):
 
         standard_help_msg = discord.Embed(
             title='Commands Help',
-            description="---------------------------------------------------------",
             color=discord.Color.blurple()
         )
 
@@ -135,98 +134,68 @@ class Utility(commands.Cog):
 
     # Latest news on that subject from NewsAPI command
     @commands.command()
-    async def news(self, ctx: Context, topic):
+    async def news(self, ctx: Context, *, topic=""):
         chnl = ctx.channel
 
-        if topic != None:
+        if topic != "":
             top_headlines = newsapi.get_top_headlines(
-                q=f"{topic}",
-                sources="bbc-news,the-verge,abc-news,cnn,fox-news,buzzfeed,google-news,cbs-news,entertainment-weekly,bleacher-report,nbc-news,new-york-magazine,the-wall-street-journal,the-washington-post",
+                q=topic,
+                sources="abc-news,associated-press,axios,bleacher-report,bloomberg,breitbart-news,business-insider,buzzfeed,cbs-news,cnn,crypto-coins-news,engadget,entertainment-weekly,espn,fox-news,fox-sports,google-news,hacker-news,ign,mashable,medical-news-today,msnbc,mtv-news,national-geographic,national-review,nbc-news,new-scientist,newsweek,new-york-magazine,next-big-future,nfl-news,nhl-news,politico,polygon,recode,reddit-r-all,reuters,techcrunch,techradar,the-american-conservative,the-hill,the-huffington-post,-weekly,espn,espn-cric-info,fortune,fox-news,fox-sports,google-news,hacker-news,ign,mashable,medical-news-today,msnbc,mtv-news,national-geographic,national-review,nbc-news,new-scientist,newsweek,new-york-magazine,next-big-future,nfl-news,nhl-news,politico,polygon,recode,reddit-r-all,reuters,techcrunch,techradar,the-american-conservative,the-hill,the-huffington-post,the-next-web,the-verge,the-wall-street-journal,the-washington-post,the-washington-times,time,usa-today,vice-news,wired",
                 language="en"
             )
 
             articles = top_headlines['articles']
 
-            await chnl.send(f"Here are the latest news on this subject: *{topic}*.")
-
-            sleep(1.3)
-
-            if len(articles) > 5:
-                iterations = 5
-            else:
-                iterations = len(articles)
-
-            for i in range(iterations):
-                article = articles[i]
-
-                await chnl.send(
-                    f"**Headline #{(i + 1)}: {article['title']}**\n{article['description']}\n{article['url']}"
+            embed = discord.Embed(
+                title=f"Top headlines I could find on topic: `{topic}`!",
+                color=discord.Color.blurple()
+            )
+            
+            for i in range(3):
+                embed.add_field(
+                    name=f"\n**{i+1}. {articles[i]['title']}**",
+                    value=f"{articles[i]['description']}\nRead more [here]({articles[i]['url']})\n"
                 )
+            
+            embed.set_footer('Powered by NewsAPI.')
 
-                if i != (iterations - 1):
-                    await chnl.send("-----------------------------------------------------------------")
-                else:
-                    pass
-
-                sleep(3.7)
+            chnl.send(embed=embed)
 
         else:
-            await chnl.send(":x: Missing required argument <city>")
-
-
-
-    # Latest news in general from NewsAPI command
-    @commands.command()
-    async def topnews(self, ctx: Context):
-        
-        top_headlines = newsapi.get_top_headlines(
-            sources="bbc-news,the-verge,abc-news,cnn,fox-news,buzzfeed,google-news,cbs-news,entertainment-weekly,bleacher-report,nbc-news,new-york-magazine,the-wall-street-journal,the-washington-post",
-            language="en"
-        )
-
-
-        articles = top_headlines['articles']
-
-        chnl = ctx.channel
-
-        await chnl.send(f"Here are the top headlines I could find:")
-
-        sleep(1.3)
-
-
-        if len(articles) > 5:
-            iterations = 5
-        else:
-            iterations = len(articles)
-
-
-        for i in range(iterations):
-            article = articles[i]
-
-            await chnl.send(
-                f"**Headline #{(i + 1)}: {article['title']}**\n{article['description']}\n{article['url']}"
+            top_headlines = newsapi.get_top_headlines(
+                sources="abc-news,associated-press,axios,bleacher-report,bloomberg,breitbart-news,business-insider,buzzfeed,cbs-news,cnn,crypto-coins-news,engadget,entertainment-weekly,espn,fox-news,fox-sports,google-news,hacker-news,ign,mashable,medical-news-today,msnbc,mtv-news,national-geographic,national-review,nbc-news,new-scientist,newsweek,new-york-magazine,next-big-future,nfl-news,nhl-news,politico,polygon,recode,reddit-r-all,reuters,techcrunch,techradar,the-american-conservative,the-hill,the-huffington-post,-weekly,espn,espn-cric-info,fortune,fox-news,fox-sports,google-news,hacker-news,ign,mashable,medical-news-today,msnbc,mtv-news,national-geographic,national-review,nbc-news,new-scientist,newsweek,new-york-magazine,next-big-future,nfl-news,nhl-news,politico,polygon,recode,reddit-r-all,reuters,techcrunch,techradar,the-american-conservative,the-hill,the-huffington-post,the-next-web,the-verge,the-wall-street-journal,the-washington-post,the-washington-times,time,usa-today,vice-news,wired",
+                language="en"
             )
 
-            if i != (iterations - 1):
-                await chnl.send("-----------------------------------------------------------------")
-            else:
-                pass
+            articles = top_headlines['articles']
 
-            sleep(3.7)
+            embed = discord.Embed(
+                title=f"Top headlines I could find!",
+                color=discord.Color.blurple()
+            )
+            
+            for i in range(3):
+                embed.add_field(
+                    name=f"\n**{i+1}. {articles[i]['title']}**",
+                    value=f"{articles[i]['description']}\nRead more [here]({articles[i]['url']})\n"
+                )
+            
+            embed.set_footer('Powered by NewsAPI.')
+
+            chnl.send(embed=embed)
 
 
     # Weather command using the OpenWeatherMap API
     @commands.command()
-    async def weather(self, ctx: Context, city):
+    async def weather(self, ctx: Context, *, city: str = ""):
         chnl = ctx.channel
-        
 
-        if city != None:
+        if city != "":
             url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_key}&units=metric'
 
-            request = requests.get(url=url)
+            response = requests.get(url=url)
 
-            data = request.json()
+            data = response.json()
 
             # Get the basic weather description from the json
             additional_data = data['weather']
@@ -278,32 +247,27 @@ class Utility(commands.Cog):
 
     # Command for quickly searching wikipedia about a topic
     @commands.command()
-    async def wikisearch(self, ctx: Context, *, arg):
+    async def wikisearch(self, ctx: Context, *, arg: str = ""):
         chnl = ctx.channel
 
-        if arg != None:
+        if arg != "":
             wiki_page = page(arg)
 
             title = wiki_page.title
             desc = (wiki_page.content[:300] + "...") if len(wiki_page.content) > 303 else wiki_page.content
             url = wiki_page.url
 
-            await chnl.send(
-                f"Here's what I found on Wikipedia about *{arg}*:"
-            )
-
-            sleep(2.0)
-
-            await chnl.send(
-                f"**{title}**\n{desc}\n\nFind out more about it here: {url}"
+            embed = discord.Embed(
+                title=f":book: {title}",
+                description=f"{desc}\nRead more about it [here]({url})"
             )
         
         else:
-            await chnl.send(":x: Missing required argument <search_query>")
+            await chnl.send(":x: Missing required argument `search_query`")
 
 
     @commands.command(aliases=['coronavirus', 'cases', 'covid'])
-    async def corona(self, ctx: Context, *, country):
+    async def corona(self, ctx: Context, *, country: str):
         chnl = ctx.channel
 
         if country != "":
@@ -341,8 +305,23 @@ class Utility(commands.Cog):
 
 
                 embed = discord.Embed(
-                    title=f"COVID-19 Information for {main_data['country']}",
-                    description=f'Total cases: {total_cases}\nActive Cases: {active_cases}\nNew cases: {new_cases}\nRecovered: {healed_cases}\n-----------------------------------------------\nTotal deaths: {total_deaths}\nNew Deaths: {new_deaths}'
+                    title=f":microbe: **COVID-19 statistics for {location}**",
+                    color=discord.Color.blurple()
+                )
+
+                embed.add_field(
+                    name=":mask: Cases",
+                    value=f"Total: `{total_cases}`\nActive: `{active_cases}`\nNew: `{new_cases}`"
+                )
+
+                embed.add_field(
+                    name=":grin: Recovered",
+                    value=f"`{healed_cases}`"
+                )
+
+                embed.add_field(
+                    name=":skull: Deaths",
+                    value=f"Total: `{total_deaths}`\nNew: `{new_deaths}`"
                 )
 
                 await chnl.send(embed=embed)
@@ -352,6 +331,9 @@ class Utility(commands.Cog):
                 await chnl.send(":x: Sorry, I can't seem to fetch any information about it.")
 
                 print(e)
+        
+        else:
+            chnl.send(f':x: Missing required argument: `city/country`')
     
 
     @commands.command()
@@ -392,7 +374,7 @@ class Utility(commands.Cog):
         )
 
         embed.add_field(
-            name="**Servers**",
+            name=":shield: **Servers**",
             value=f"`{len(self.bot.guilds)}`",
             inline=True
         )

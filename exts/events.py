@@ -1,4 +1,5 @@
 import discord
+from discord.activity import Game
 from discord.ext import commands
 import json
 
@@ -10,7 +11,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('Uncle Dunk\'s bot is in the house and he ain\'t leaving')
-        await self.bot.change_presence(activity=discord.Activity(name="||| -help to show the list of commands! |||"), status=discord.Status.dnd)
+        await self.bot.change_presence(status=discord.Status.dnd)
 
 
     @commands.Cog.listener()
@@ -44,6 +45,7 @@ class Events(commands.Cog):
 
         else:
             pass
+
 
 
 def setup(bot):

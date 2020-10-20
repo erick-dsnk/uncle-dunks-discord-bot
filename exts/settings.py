@@ -1,32 +1,17 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import Cog, Context
 import json
 
-class Settings(commands.Cog):
+class Settings(Cog):
     def __init__(self, bot):
         self.bot = bot
     
 
     @commands.has_permissions(administrator=True)
     @commands.command()
-    async def setwelcomechannel(self, ctx, channel):
+    async def setwelcomechannel(self, ctx: Context, channel):
         guild = str(ctx.guild.id)
-
-        with open('settings.json', 'r') as f:
-            data = json.load(f)
-
-            if guild in data['server-settings']:
-                data['server-settings'][guild]['welcome_channel'] = channel.id
-            
-            else:
-                data['server-settings'].append({guild: {}})
-                data['server-settings'][guild]['welcome_channel'] = channel.id
-                
-
-        with open('settings.json', 'w') as f:
-            obj = json.dumps(data, indent=4)
-
-            f.write(obj)
 
 
         await ctx.channel.send(f":white_check_mark: Successfully set welcome channel to #{channel}")
