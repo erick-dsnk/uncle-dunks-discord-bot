@@ -154,12 +154,12 @@ class Utility(commands.Cog):
             for i in range(3):
                 embed.add_field(
                     name=f"\n**{i+1}. {articles[i]['title']}**",
-                    value=f"{articles[i]['description']}\nRead more [here]({articles[i]['url']})\n"
+                    value=f"{articles[i]['description']}\n\nRead more [here]({articles[i]['url']})\n"
                 )
             
-            embed.set_footer('Powered by NewsAPI.')
+            embed.set_footer(text='Powered by NewsAPI.')
 
-            chnl.send(embed=embed)
+            await chnl.send(embed=embed)
 
         else:
             top_headlines = newsapi.get_top_headlines(
@@ -180,9 +180,9 @@ class Utility(commands.Cog):
                     value=f"{articles[i]['description']}\nRead more [here]({articles[i]['url']})\n"
                 )
             
-            embed.set_footer('Powered by NewsAPI.')
+            embed.set_footer(text='Powered by NewsAPI.')
 
-            chnl.send(embed=embed)
+            await chnl.send(embed=embed)
 
 
     # Weather command using the OpenWeatherMap API
@@ -237,8 +237,6 @@ class Utility(commands.Cog):
                 value=f"**Wind speed**: {wind_speed} m/s\n**Humidity**: {humidity}%\n**Cloudiness**: {cloudiness}%\n**Atmospheric Pressure**: {round((atmospheric_pressure / 1013.25), 4)} atm ({atmospheric_pressure} hPa)"
             )
 
-            await chnl.send(f"Ok, here's the weather information I found for {city_data}")
-            sleep(1.2)
             await chnl.send(embed=embed)
 
         else:
@@ -397,21 +395,19 @@ class Utility(commands.Cog):
         if user == None:
             user = ctx.author
         
+        joined = user.joined_at.strftime('`%d-%m-%Y @ %H:%M:%S`')
+        created = user.created_at.strftime('`%d-%m-%Y @ %H:%M:%S`')
+
         embed = discord.Embed(
-            title=f"{user.mention}",
+            title=f"{user.name}#{user.discriminator}",
             description="\n",
             color=discord.Color.blurple()
         )
 
         embed.add_field(
-            name=":clock: **Joined Server:**",
-            value=f"`{user.joined_at.split('.')[0].split(' ')[0]}`@`{user.joined_at.split('.')[0].split(' ')[1]}`",
+            name=":clock: **Basic**",
+            value=f"Joined server: {joined}\nCreated account: {created}",
             inline=True
-        )
-
-        embed.add_field(
-            name="**Account created:**",
-            value=f"`{user.created_at.split('.')[0].split(' ')[0]}`@`{user.created_at.split('.')[0].split(' ')[1]}`"
         )
 
         embed.add_field(
@@ -422,21 +418,30 @@ class Utility(commands.Cog):
 
         if user.status == discord.Status.online:
             embed.add_field(
-                name="**User Status**",
-                value=":green_circle: Online"
+                name=":moyai: **User Status**",
+                value="(*) :green_circle: Online\n( ) :red_circle: Do Not Disturb\n( ) :black_circle: Offline/Invisible"
             )
         
+        elif user.status == discord.Status.idle:
+            embed.add_field(
+                name=":moyai: **User Status**",
+                value="( ) :green_circle: Online\n(*) :yellow_circle: Idle\n( ) :red_circle: Do Not Disturb\n( ) :black_circle: Offline/Invisible"
+            )
+
         elif user.status == discord.Status.do_not_disturb:
             embed.add_field(
-                name="**User Status**",
-                value=":red_circle: Do Not Disturb"
-            )
+                name=":moyai: **User Status**",
+                value="( ) :green_circle: Online\n( ) :yellow_circle: Idle\n(*) :red_circle: Do Not Disturb\n( ) :black_circle: Offline/Invisible"
+            )        
         
         elif user.status == discord.Status.offline or user.status == discord.Status.invisible:
             embed.add_field(
-                name="**User Status**",
-                value=":black_circle: Offline/Invisible"
+                name=":moyai: **User Status**",
+                value="( ) :green_circle: Online\n( ) :yellow_circle: Idle\n( ) :red_circle: Do Not Disturb\n(*) :black_circle: Offline/Invisible"
             )
+        
+
+        await ctx.channel.send(embed=embed)
 
 
     @commands.command(aliases=['sv', 'server', 'svinfo', 'svi'])

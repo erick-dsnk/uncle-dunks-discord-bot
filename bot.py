@@ -17,8 +17,8 @@ import discord
 from discord.ext import commands
 import os
 
-client = commands.Bot(command_prefix = '-')
-
+intents = discord.Intents.all()
+client = commands.Bot(command_prefix = '-', intents=intents)
 client.remove_command('help')
 
 
@@ -37,12 +37,10 @@ token = get_token()
 client.load_extension('exts.code_eval')
 client.load_extension('exts.entertainment')
 client.load_extension('exts.events')
+client.load_extension('exts.games')
 client.load_extension('exts.math')
 client.load_extension('exts.moderation')
-client.load_extension('exts.music')
 client.load_extension('exts.utility')
 ############################################
-
-
 
 client.run(token)

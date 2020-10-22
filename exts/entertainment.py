@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 from random import randint, choice
+from discord.ext.commands import Context
 import praw
 import requests
-from time import sleep
+import asyncio
 
 
 def get_client_id():
@@ -39,8 +40,6 @@ reddit_instance = praw.Reddit(
     user_agent="Uncle Dunk's Bot/0.0.1 by u/dsnk24"
 )
 
-
-
 class Entertainment(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -48,10 +47,10 @@ class Entertainment(commands.Cog):
 
     # Magic 8 Ball command
     @commands.command(aliases=["8ball"])
-    async def _8ball(self, ctx, *, q):
+    async def _8ball(self, ctx, *, q = ""):
         chnl = ctx.channel
 
-        if q != None:
+        if q != "":
 
             answers = [
                 "It is certain.",
@@ -78,10 +77,24 @@ class Entertainment(commands.Cog):
 
             response = choice(answers)
 
-            await chnl.send(response)
+            embed = discord.Embed(
+                color=discord.Color.blurple()
+            )
+
+            embed.add_field(
+                name=":question: Question",
+                value=f"*{q}*"
+            )
+
+            embed.add_field(
+                name=":a: Answer",
+                value=f"*{response}*"
+            )
         
+            await chnl.send(embed=embed)
+
         else:
-            await chnl.send(":x: Missing required argument: <question>")
+            await chnl.send(":x: Missing required argument: `question`")
 
 
     # Meme from reddit command
@@ -128,39 +141,28 @@ class Entertainment(commands.Cog):
 
         joke_data = req.json()
 
-
-        openers = [
-            "Okay, here comes a good one...",
-            "I'm a bit rusty but I'll give it a shot.",
-            "Really?? No one has wanted to hear my jokes in so long, I'll be glad to tell you one!",
-            "Hmm, let me think... Oh I know just the one!",
-            "Ok fine, I'll tell you one, but don't make a habit out of it!"
+        answers = [
+            'Here\'s a good one!',
+            'Ooo this is a spicy one!',
+            'I\'m still laughing at this one!'
         ]
 
-        opener = choice(openers)
-
-        chnl = ctx.channel
-
-        if joke_data['type'] == "single":
-            await chnl.send(opener)
-
-            sleep(2.2)
-
-            await chnl.send(f"**{joke_data['joke']}**")
-
-        elif joke_data['type'] == "twopart":
-            await chnl.send(opener)
-
-            sleep(2.2)
-
-            await chnl.send(f"**{joke_data['setup']}**")
-
-            sleep(3.0)
-
-            await chnl.send(f"**{joke_data['delivery']}**")
+        if joke_data['type'] == 'single':
+            embed = discord.Embed(
+                title=choice(answers),
+                color=discord.Color.blurple(),
+                description=joke_data['joke']
+            )
         
-        else:
-            print(f"Another type of joke found: {joke_data['type']}")
+        elif joke_data['type'] == 'twopart':
+            embed = discord.Embed(
+                title=choice(answers),
+                color=discord.Color.blurple(),
+                description=f"{joke_data['setup']}\n{joke_data['delivery']}"
+            )
+
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
