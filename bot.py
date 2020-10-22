@@ -41,6 +41,7 @@ client.load_extension('exts.games')
 client.load_extension('exts.math')
 client.load_extension('exts.moderation')
 client.load_extension('exts.utility')
+client.load_extension('exts.help')
 ############################################
 
 client.run(token)

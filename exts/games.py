@@ -5,7 +5,7 @@ from random import choice
 
 
 class Games(Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
     
     
@@ -41,8 +41,21 @@ class Games(Cog):
 
     @commands.command()
     async def tictactoe(self, ctx: Context):
-        pass
-
+        table = """
+        1      2      3
+     ______________________
+     |      |      |      |
+  1  |  {11}  |  {12}  |  {13}  |
+     |______|______|______|
+     |      |      |      |
+  2  |  {21}  |  {22}  |  {23}  |
+     |______|______|______|
+     |      |      |      |
+  3  |  {31}  |  {32}  |  {33}  |
+     |______|______|______|
+"""
+        
+        await ctx.send('This game is not finished yet! :3')
 
 def setup(bot):
     bot.add_cog(Games(bot))
