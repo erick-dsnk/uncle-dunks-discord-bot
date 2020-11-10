@@ -363,9 +363,131 @@ class Utility(commands.Cog):
         await ctx.channel.send(embed=embed)
 
 
+    @commands.command()
+    async def source(self, ctx: Context):
+        await ctx.send("https://github.com/erick-dsnk/uncle-dunks-discord-bot")
+
+
     @commands.command(aliases=['sv', 'server', 'svinfo', 'svi'])
     async def serverinfo(self, ctx: Context):
-        await ctx.send(":clock: Command is work-in-progress!")
+        embed = discord.Embed(
+            color=discord.Color.dark_blue()
+        )
+        c = 0
+        b = 0
+        for i in ctx.guild.members:
+            if i.bot:
+                b = b + 1
+            else:
+                c = c + 1
+
+        counter = 0
+        for user in ctx.guild.members:
+            if user.status == discord.Status.offline:
+                counter += 1
+
+        counter1 = 0
+        for user in ctx.guild.members:
+            if user.status == discord.Status.online:
+                counter1 += 1
+
+        counter2 = 0
+        for user in ctx.guild.members:
+            if user.status == discord.Status.idle:
+                counter2 += 1
+
+        counter3 = 0
+        for user in ctx.guild.members:
+            if user.status == discord.Status.dnd:
+                counter3 += 1
+
+        embed.set_thumbnail(url=ctx.guild.icon_url)
+        embed.set_author(
+            name='Server Info', icon_url='https://www.trendmicro.com/azure/wp-content/uploads/2015/11/TM_ServerSequence_300x300.gif')
+
+        embed.add_field(
+            name=":ballot_box: Name:",
+            inline=True,
+            value=f"**{ctx.guild.name}**"
+        )
+
+        embed.add_field(
+            name=":crown: Owner:", inline=True,
+            value=f"{ctx.guild.owner.mention}"
+        
+        )
+        embed.add_field(
+            name=":credit_card: Server ID",
+            inline=True,
+            value=f'`{ctx.guild.id}`'
+        )
+
+        embed.add_field(
+            name=":person_pouting: Members: ",
+            inline=True,
+            value=f"`{c}`"
+        )
+
+        embed.add_field(
+            name=":robot: Bots: ",
+            inline=True,
+            value=f"`{b}`"
+        )
+
+        embed.add_field(
+            name="Online: ",
+            inline=True,
+            value=f":green_circle:  `{counter1}`"
+        )
+
+        embed.add_field(
+            name="Idle: ",
+            inline=True,
+            value=f":yellow_circle:  `{counter2}`"
+        )
+
+        embed.add_field(
+            name="Do not disturd: ",
+            inline=True,
+            value=f":red_circle:  `{counter3}`"
+        )
+
+        embed.add_field(
+            name="Offline : ",
+            inline=True,
+            value=f":black_circle:  `{counter}`"
+        )
+
+        embed.add_field(
+            name=":calendar: Server created at: ",
+            value=f"{ctx.guild.created_at.strftime('%A, %B , `%d` : `%Y` @ `%H:%M:%S` UTC')}",
+            inline=False
+        )
+
+        embed.add_field(
+            name=":printer:  Text Channels:",
+            inline=True,
+            value=f"`{len(ctx.guild.text_channels)}`"
+        )
+
+        embed.add_field(
+            name=":microphone2:  Voice Channels:",
+            inline=True,
+            value=f"`{len(ctx.guild.voice_channels)}`"
+        )
+
+        embed.add_field(
+            name="Roles: ",
+            inline=True,
+            value=f'`{len(ctx.guild.roles)}`'
+        )
+
+        embed.set_footer(
+            icon_url=ctx.author.avatar_url,
+            text=f"Requested by {ctx.author.name} on {ctx.message.created_at.strftime ('%A %B %d %Y @ %H:%M:%S %p')}"
+        )
+
+        await ctx.send(embed=embed)
 
 
 

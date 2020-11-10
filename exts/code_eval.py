@@ -213,28 +213,32 @@ async def func():
 
     @commands.command(aliases=['e', 'eva', 'code', 'evalcode', 'py', 'python'])
     async def eval(self, ctx: Context, *, code: str):
-        if '```py' in code or '```python' in code:
-            code = "".join(code.split('\n')[:1])
+        if ctx.message.author.id == 419022467210936330:
+            if '```py' in code or '```python' in code:
+                code = "".join(code.split('\n')[:1])
 
-        code = code.strip('`')
+            code = code.strip('`')
 
-        banned_elems = [
-            'os',
-            'system',
-            'chdir',
-            'subprocess',
-            'urllib',
-            'urlopen',
-            'while',
-            'sys'
-        ]
+            banned_elems = [
+                'os',
+                'system',
+                'chdir',
+                'subprocess',
+                'urllib',
+                'urlopen',
+                'while',
+                'sys'
+            ]
 
-        for elem in banned_elems:
-            if elem in code:
-                await ctx.send(':x: Banned element discovered in codeblock!')
-                return
+            for elem in banned_elems:
+                if elem in code:
+                    await ctx.send(':x: Banned element discovered in codeblock!')
+                    return
 
-        await self._eval(ctx, code)
+            await self._eval(ctx, code)
+        
+        else:
+            await ctx.send('Uh-oh! You\'re not allowed to use that command!')
 
 
 
