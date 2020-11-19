@@ -15,7 +15,7 @@
 
 import discord
 from discord.ext import commands
-import os
+from exts.database import economy_collection
 
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix = '-', intents=intents)
@@ -42,6 +42,7 @@ client.load_extension('exts.math')
 client.load_extension('exts.moderation')
 client.load_extension('exts.utility')
 client.load_extension('exts.help')
+client.load_extension('exts.economy')
 ############################################
 
 client.run(token)
