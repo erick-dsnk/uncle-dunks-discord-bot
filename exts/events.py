@@ -83,6 +83,34 @@ class Events(Cog):
         
         else:
             print(error)
+    
+
+    @Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        members_data = economy_collection.find_one({"_id": member.guild.id})['members']
+
+        members_data.append({"id": member.id, "money": 0})
+
+        economy_collection.find_one_and_update({"_id": member.guild.id}, {"$set": {"members": members_data}})
+
+
+    @Cog.listener()
+    async def on_member_remove(self, member: discord.Member):
+        members_data = economy_collection.find_one({"_id": member.guild.id})['members']
+
+        i = 0
+
+        for user in members_data:
+            if user['id'] == member.id:
+                del members_data[i]
+                break
+            
+            else:
+                pass
+
+            i += 1
+        
+        economy_collection.find_one_and_update({"_id": member.guild.id}, {"$set": {"members": members_data}})
 
 def setup(bot):
     bot.add_cog(Events(bot))
