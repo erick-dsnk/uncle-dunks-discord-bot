@@ -14,6 +14,11 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: Context, member: discord.Member, *, reason="None specified."):
+        '''
+        Kick a member from the server.
+        Usage: `-kick @BadCookie#0001 You are a bad cookie >:(`
+        '''
+        
         dm_chnl = await member.create_dm()
 
         chnl = ctx.channel
@@ -35,6 +40,11 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: Context, member: discord.Member, *, reason="None specified."):
+        '''
+        Ban a member from the server.
+        Usage: `-ban @BadCookie#0001 You are a VERY bad cookie >:(`
+        '''
+        
         dm_chnl = await member.create_dm()
 
         chnl = ctx.channel
@@ -56,6 +66,12 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def mute(self, ctx: Context, user: discord.Member, duration: str = "15m"):
+        '''
+        Restrict a member from sending messages
+        Duration is an optional argument and it will mute the member for 15 minutes if none is given.
+        The duration argument can be passed in seconds (`50s`), minutes (`20m`), hours (`2h`) or days (`7d`).
+        '''
+        
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(user)
             perms.send_messages = False
@@ -96,6 +112,10 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def unmute(self, ctx: Context, user: discord.Member):
+        '''
+        It gives the member ability to send messages again.
+        '''
+
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(user)
             perms.send_messages = True
@@ -112,6 +132,12 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def vcmute(self, ctx: Context, user: discord.Member, duration: str = '15m'):
+        '''
+        Restrict a member speaking in voice channels
+        Duration is an optional argument and it will mute the member for 15 minutes if none is given.
+        The duration argument can be passed in seconds (`50s`), minutes (`20m`), hours (`2h`) or days (`7d`).
+        '''
+        
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(user)
             perms.speak = False
@@ -153,6 +179,10 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     @commands.command()
     async def vcunmute(self, ctx: Context, user: discord.Member):
+        '''
+        It gives the member ability to speak in voice channels again.
+        '''
+        
         for channel in ctx.guild.text_channels:
             perms = channel.overwrites_for(user)
             perms.speak = True

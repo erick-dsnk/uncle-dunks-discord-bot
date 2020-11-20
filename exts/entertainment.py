@@ -48,6 +48,10 @@ class Entertainment(commands.Cog):
     # Magic 8 Ball command
     @commands.command(aliases=["8ball"])
     async def _8ball(self, ctx, *, q = ""):
+        '''
+        Shake the Magic 8 Ball and get an answer to your question
+        Usage: `-8ball Am I a good cookie?`
+        '''
         chnl = ctx.channel
 
         if q != "":
@@ -100,6 +104,9 @@ class Entertainment(commands.Cog):
     # Meme from reddit command
     @commands.command()
     async def meme(self, ctx):
+        '''
+        It sends you a hot meme off Reddit!
+        '''
         memes = reddit_instance.subreddit('memes').hot()
 
         pick_number = randint(0, 10)
@@ -115,6 +122,9 @@ class Entertainment(commands.Cog):
     # A cute doggo from reddit command :3
     @commands.command()
     async def doggo(self, ctx):
+        '''
+        Sends you a picture of a cute doggo :3
+        '''
         dogs = reddit_instance.subreddit('doggos').hot()
 
         pick_number = randint(0, 10)
@@ -130,6 +140,9 @@ class Entertainment(commands.Cog):
     # Jokes from JokeAPIv2 command
     @commands.command()
     async def joke(self, ctx):
+        '''
+        Tells you a top-notch joke.
+        '''
         url = "https://jokeapi-v2.p.rapidapi.com/joke/Any"
 
         headers = {

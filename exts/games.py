@@ -11,6 +11,10 @@ class Games(Cog):
     
     @commands.command()
     async def rps(self, ctx: Context, user_choice: str):
+        '''
+        Play a good game of Rock, Paper, Scissors with Uncle Dunk!
+        Choices: `rock`, `paper`, `scissors`
+        '''
         possibilities = ['rock', 'scissors', 'paper']
 
         win_conditions = {
@@ -41,6 +45,9 @@ class Games(Cog):
 
     @commands.command()
     async def tictactoe(self, ctx: Context):
+        '''
+        Play a game of Tic Tac Toe against Uncle Dunk! (WIP)
+        '''
         table = """
         1      2      3
      ______________________

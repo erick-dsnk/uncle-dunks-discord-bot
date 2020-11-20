@@ -43,17 +43,22 @@ class Utility(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    # Returns the latency of the bot.
     @commands.command()
     async def ping(self, ctx: Context):
+        '''
+        Latency of the bot.
+        '''
         chnl = ctx.channel
 
         await chnl.send(f'Pong! Time took to respond: {round((self.bot.latency * 1000))}ms')
 
 
-    # Latest news on that subject from NewsAPI command
     @commands.command()
     async def news(self, ctx: Context, *, topic=""):
+        '''
+        Get top 3 headlines from the most trusted news sources!
+        '''
+
         chnl = ctx.channel
 
         if topic != "":
@@ -107,6 +112,10 @@ class Utility(commands.Cog):
     # Weather command using the OpenWeatherMap API
     @commands.command()
     async def weather(self, ctx: Context, *, city: str = ""):
+        '''
+        Sends you the latest weather forecast in a city or country.
+        '''
+
         chnl = ctx.channel
 
         if city != "":
@@ -165,6 +174,10 @@ class Utility(commands.Cog):
     # Command for quickly searching wikipedia about a topic
     @commands.command()
     async def wikisearch(self, ctx: Context, *, arg: str = ""):
+        '''
+        Search Wikipedia about a certain topic.
+        '''
+
         chnl = ctx.channel
 
         if arg != "":
@@ -185,6 +198,10 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=['coronavirus', 'cases', 'covid'])
     async def corona(self, ctx: Context, *, country: str):
+        '''
+        Get information about the latest COVID-19 pandemic situation in a city or country.
+        '''
+
         chnl = ctx.channel
 
         if country != "":
@@ -255,6 +272,10 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def avatar(self, ctx: Context, member: discord.Member = None):
+        '''
+        Like a person's profile picture? You can now get it with this command!
+        '''
+
         if member:
             embed = discord.Embed(title=f"{member.name}#{member.discriminator}'s avatar")
 
@@ -272,6 +293,10 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=['bot', 'botinfo', 'i'])
     async def info(self, ctx: Context):
+        '''
+        Get information about the bot and its status.
+        '''
+
         embed = discord.Embed(
             title="**Bot Info**",
             description="\n",
@@ -302,6 +327,12 @@ class Utility(commands.Cog):
             inline=True
         )
 
+        embed.add_field(
+            name=":robot: Version",
+            value="v1.6.0",
+            inline=True
+        )
+
         embed.set_footer(
             text="Developed by saint#5622"
         )
@@ -311,6 +342,9 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def userinfo(self, ctx: Context, user: discord.Member = None):
+        '''
+        Get information about a certain user!
+        '''
         if user == None:
             user = ctx.author
         
@@ -365,11 +399,17 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def source(self, ctx: Context):
+        '''
+        Sends the link to the GitHub repository where the source code is kept.
+        '''
         await ctx.send("https://github.com/erick-dsnk/uncle-dunks-discord-bot")
 
 
     @commands.command(aliases=['sv', 'server', 'svinfo', 'svi'])
     async def serverinfo(self, ctx: Context):
+        '''
+        Get information about the server the command was used in.
+        '''
         embed = discord.Embed(
             color=discord.Color.dark_blue()
         )

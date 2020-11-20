@@ -13,14 +13,20 @@
 #   limitations under the License.
 
 
+'''
+Uncle Dunk's Bot v1.6
+'''
+
+
 import discord
 from discord.ext import commands
 from exts.database import economy_collection
+from pretty_help import PrettyHelp, Navigation
 
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix = '-', intents=intents)
-client.remove_command('help')
 
+client.help_command = PrettyHelp()
 
 ################ GET TOKEN FUNCTION ###############
 def get_token():
@@ -34,14 +40,12 @@ token = get_token()
 ############################################
 
 ################## COGS ####################
-client.load_extension('exts.code_eval')
+# client.load_extension('exts.code_eval')   ->  represented security issues
 client.load_extension('exts.entertainment')
 client.load_extension('exts.events')
 client.load_extension('exts.games')
-client.load_extension('exts.math')
 client.load_extension('exts.moderation')
 client.load_extension('exts.utility')
-client.load_extension('exts.help')
 client.load_extension('exts.economy')
 ############################################
 

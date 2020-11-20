@@ -32,7 +32,11 @@ all_commands = [
     'botinfo',
     'userinfo',
     'serverinfo',
-    'eval'
+    'eval',
+    'work',
+    'rob',
+    'balance',
+    'deposit'
 ]
 
 
@@ -43,7 +47,7 @@ def setup_database(client):
 
             for member in guild.members:
                 members.append(
-                    {"id": member.id, "money": 0}
+                    {"id": member.id, "money": 0, "bank": 0}
                 )
 
             economy_collection.insert_one(
@@ -89,7 +93,7 @@ class Events(Cog):
     async def on_member_join(self, member: discord.Member):
         members_data = economy_collection.find_one({"_id": member.guild.id})['members']
 
-        members_data.append({"id": member.id, "money": 0})
+        members_data.append({"id": member.id, "money": 0, "bank": 0})
 
         economy_collection.find_one_and_update({"_id": member.guild.id}, {"$set": {"members": members_data}})
 
