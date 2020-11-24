@@ -6,6 +6,16 @@ from exts.database import economy_collection
 import random
 
 
+def convert_to_time(seconds):
+    seconds = seconds % (24 * 3600)
+    hours = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+
+    return f"{hours} hours, {minutes} minutes, {seconds} seconds"
+
+
 class Economy(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -45,16 +55,16 @@ class Economy(Cog):
     @work.error
     async def work_error(self, ctx: Context, error):
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("You're on cooldown! You can only use the `work` command every 30 minutes!")
+            await ctx.send(f"You're on cooldown! You will be able to use that command in **{convert_to_time(error.retry_after)}**!")
 
 
-    @commands.cooldown(1, 7200, type=commands.BucketType.member)
+    @commands.cooldown(1, 10800, type=commands.BucketType.member)
     @commands.command()
     async def rob(self, ctx: Context, user: discord.Member):
         '''
         Take a risk and mug someone... You can lose a lot of money if you get caught... But you can also *win* a lot of money if you get away with it!
-        You can only rob someone every 2 hours.
-        Rewards/Losses are between 300 and 1000 dunk dollars.
+        You can only rob someone every 3 hours.
+        Rewards are between 300 and 1000 dunk dollars. Fines are between 100 and 200 dunk dollars.
         '''
         members_data = economy_collection.find_one({"_id": ctx.guild.id})['members']
 
@@ -64,25 +74,30 @@ class Economy(Cog):
         success = random.random() * 100
 
         amount = random.randint(300, 1000)
+        fine = random.randint(100, 200)
 
         if success >= 30.0:
             for member in members_data:
                 if member['id'] == robber.id:
-                    member['money'] -= amount
+                    if member['money'] < fine:
+                        member['money'] = 0
+                    
+                    else:
+                        member['money'] -= fine
                 
                 elif member['id'] == victim.id:
-                    member['money'] += amount
-
-                    embed = discord.Embed(
-                        title="Busted!",
-                        description=f"You tried robbing {victim.mention} but you got caught and you lost {amount} coins!",
-                        color=discord.Color.red()
-                    )
-
-                    await ctx.send(embed=embed)
+                    member['money'] += fine * 2
                 
                 else:
                     pass
+            
+            embed = discord.Embed(
+                title="Busted!",
+                description=f"You tried robbing {victim.mention} but you got caught and you lost {amount} coins!",
+                color=discord.Color.red()
+            )
+
+            await ctx.send(embed=embed)
 
                 
         else:
@@ -91,29 +106,58 @@ class Economy(Cog):
                     member['money'] += amount
 
                 elif member['id'] == victim.id:
-                    if member['money'] < amount:
+                    if member['money'] < (amount / 2):
                         member['money'] = 0
                     
                     else:
-                        member['money'] -= amount
-                    
-                    embed = discord.Embed(
-                        title="Success!",
-                        description=f"You managed to get away with robbing {victim.mention} and earned {amount}!",
-                        color=discord.Color.green()
-                    )
-
-                    await ctx.send(embed=embed)
-
+                        member['money'] -= (amount / 2)
                 else:
                     pass
+            
+            embed = discord.Embed(
+                title="Success!",
+                description=f"You managed to get away with robbing {victim.mention} and earned {amount}!",
+                color=discord.Color.green()
+            )
+
+            await ctx.send(embed=embed)
                 
         economy_collection.update_one({"_id": ctx.guild.id}, {"$set": {"members": members_data}})
 
     @rob.error
     async def rob_error(self, ctx: Context, error):
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("You're on cooldown! You can only use the `rob` command every 3 hours!")
+            await ctx.send(f"You're on cooldown! You will be able to use that command in **{convert_to_time(error.retry_after)}**!")
+
+
+    @commands.cooldown(1, 86400, commands.BucketType.member)
+    @commands.command()
+    async def daily(self, ctx: Context):
+        '''
+        Collect your daily 500 dunk dollar bonus!
+        '''
+        members = economy_collection.find_one({"_id": ctx.guild.id})['members']
+
+        for member in members:
+            if member['id'] == ctx.author.id:
+                member['money'] += 500
+        
+        embed = discord.Embed(
+            title="**Daily bonus!**",
+            description=":white_check_mark: Successfully claimed your daily `500` dunk dollars bonus!",
+            color=discord.Color.green()
+        )
+
+        economy_collection.find_one_and_update({"_id": ctx.guild.id}, {"$set": {"members": members}})
+
+        await ctx.send(embed=embed)
+
+
+    @daily.error
+    async def daily_error(self, ctx: Context, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f"You're on cooldown! You will be able to use that command in **{convert_to_time(error.retry_after)}**!")
+
 
     @commands.command()
     async def balance(self, ctx: Context, user: discord.Member = None):

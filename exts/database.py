@@ -12,3 +12,4 @@ cluster = MongoClient(get_mongodb_uri())
 
 db = cluster['uncledunk']
 economy_collection = db['economy']
+settings_collection = db['settings']

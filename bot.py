@@ -44,6 +44,7 @@ client.load_extension('exts.games')
 client.load_extension('exts.moderation')
 client.load_extension('exts.utility')
 client.load_extension('exts.economy')
+client.load_extension('exts.settings')
 ############################################
 
 client.run(get_token())

@@ -46,7 +46,7 @@ class Entertainment(commands.Cog):
 
 
     # Magic 8 Ball command
-    @commands.command(aliases=["8ball"])
+    @commands.command(name="8ball")
     async def _8ball(self, ctx, *, q = ""):
         '''
         Shake the Magic 8 Ball and get an answer to your question
@@ -225,6 +225,9 @@ class Entertainment(commands.Cog):
 
     @commands.command(aliases=['poke'])
     async def pokemon(self, ctx: Context, poke: str):
+        '''
+        Get information about a Pokemon!
+        '''
         base_url = "https://pokeapi.co/api/v2/pokemon/"
 
         response = requests.get(base_url + poke)
@@ -263,9 +266,17 @@ class Entertainment(commands.Cog):
                 stat_field += stat['stat']['name'].title() + "\t\t" + str(stat['base_stat'])
                 stat_field += "\n"
 
-            for move in moves:
-                move_field += move['move']['name'].title()
-                move_field += "\n"
+            if len(moves) > 6:
+                for i in range(5):
+                    move_field += moves[i]['move']['name'].title()
+                    move_field += "\n"
+                
+                move_field += "..."
+            
+            else:
+                for move in moves:
+                    move_field += move['move']['name'].title()
+                    move_field += "\n"
 
             embed = discord.Embed(
                 title=f"{poke.title()}",
@@ -274,32 +285,38 @@ class Entertainment(commands.Cog):
 
             embed.add_field(
                 name="**Height**",
-                value=f"{response['height']}"
+                value=f"{response['height']}",
+                inline=True
             )
 
             embed.add_field(
                 name="**Weight**",
-                value=f"{response['weight']}"
+                value=f"{response['weight']}",
+                inline=True
             )
 
             embed.add_field(
                 name=f"**Types [{len(types)}**",
-                value=f"{type_field}"
+                value=f"{type_field}",
+                inline=True
             )
 
             embed.add_field(
                 name=f"**Abilities [{len(abilities)}]**",
-                value=f"{ability_field}"
+                value=f"{ability_field}",
+                inline=True
             )
 
             embed.add_field(
                 name=f"**Stats**",
-                value=f"{stat_field}"
+                value=f"{stat_field}",
+                inline=True
             )
             
             embed.add_field(
                 name=f"**Moves**",
-                value=f"{move_field}"
+                value=f"{move_field}",
+                inline=True
             )
 
             embed.set_image(url=response['sprites']['back_default'])

@@ -426,29 +426,30 @@ class Utility(commands.Cog):
             else:
                 c = c + 1
 
-        counter = 0
+        offline = 0
+        online = 0
+        idle = 0
+        dnd = 0
+
         for user in ctx.guild.members:
             if user.status == discord.Status.offline:
-                counter += 1
+                offline += 1
+            
+            elif user.status == discord.Status.online:
+                online += 1
 
-        counter1 = 0
-        for user in ctx.guild.members:
-            if user.status == discord.Status.online:
-                counter1 += 1
+            elif user.status == discord.Status.idle:
+                idle += 1
 
-        counter2 = 0
-        for user in ctx.guild.members:
-            if user.status == discord.Status.idle:
-                counter2 += 1
-
-        counter3 = 0
-        for user in ctx.guild.members:
-            if user.status == discord.Status.dnd:
-                counter3 += 1
+            elif user.status == discord.Status.dnd:
+                dnd += 1
 
         embed.set_thumbnail(url=ctx.guild.icon_url)
+
         embed.set_author(
-            name='Server Info', icon_url='https://www.trendmicro.com/azure/wp-content/uploads/2015/11/TM_ServerSequence_300x300.gif')
+            name='Server Info',
+            icon_url='https://www.trendmicro.com/azure/wp-content/uploads/2015/11/TM_ServerSequence_300x300.gif'
+        )
 
         embed.add_field(
             name=":ballot_box: Name:",
@@ -482,25 +483,25 @@ class Utility(commands.Cog):
         embed.add_field(
             name="Online: ",
             inline=True,
-            value=f":green_circle:  `{counter1}`"
+            value=f":green_circle:  `{online}`"
         )
 
         embed.add_field(
             name="Idle: ",
             inline=True,
-            value=f":yellow_circle:  `{counter2}`"
+            value=f":yellow_circle:  `{idle}`"
         )
 
         embed.add_field(
-            name="Do not disturd: ",
+            name="Do not disturb: ",
             inline=True,
-            value=f":red_circle:  `{counter3}`"
+            value=f":red_circle:  `{dnd}`"
         )
 
         embed.add_field(
             name="Offline : ",
             inline=True,
-            value=f":black_circle:  `{counter}`"
+            value=f":black_circle:  `{offline}`"
         )
 
         embed.add_field(
@@ -537,6 +538,9 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def remindme(self, ctx: Context, after: str, *, reminder: str):
+        '''
+        Set a reminder and Uncle Dunk will tag you after the amount of time specified!
+        '''
         initial = ""
         
         if 's' in after:
