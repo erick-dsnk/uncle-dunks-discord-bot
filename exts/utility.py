@@ -6,6 +6,7 @@ import requests
 from wikipedia import page
 import psutil
 from discord.ext.commands import Context
+import asyncio
 
 
 def get_newsapi_key():
@@ -402,7 +403,11 @@ class Utility(commands.Cog):
         '''
         Sends the link to the GitHub repository where the source code is kept.
         '''
-        await ctx.send("https://github.com/erick-dsnk/uncle-dunks-discord-bot")
+        embed = discord.Embed(
+            title="Source code",
+            description="Check out the source code on [GitHub](https://github.com/erick-dsnk/uncle-dunks-discord-bot)"
+        )
+        await ctx.send(embed=embed)
 
 
     @commands.command(aliases=['sv', 'server', 'svinfo', 'svi'])
@@ -530,6 +535,53 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
 
 
+    @commands.command()
+    async def remindme(self, ctx: Context, after: str, *, reminder: str):
+        initial = ""
+        
+        if 's' in after:
+            after = int(after.strip('s'))
+
+            initial = f"{after} seconds"
+        
+        elif 'm' in after:
+            after = int(after.strip('m')) * 60
+
+            initial = f"{after} minutes"
+        
+        elif 'h' in after:
+            after = int(after.strip('h')) * 3600
+
+            initial = f"{after} hours"
+        
+        elif 'd' in after:
+            after = int(after.strip('d')) * 86400
+
+            initial = f"{after} days"
+        
+        else:
+            after = int(after)
+
+            initial = f"{after} seconds"
+        
+        
+        embed = discord.Embed(
+            title=f":white_check_mark: Successfully set a reminder!",
+            description=f"Will remind you to `{reminder}` in `{initial}`.",
+            color=discord.Color.blurple()
+        )
+
+        await ctx.send(embed=embed)
+
+        await asyncio.sleep(after)
+
+        new_embed = discord.Embed(
+            title="Wake up sleepy head!",
+            description=f"Time to `{reminder}`! {ctx.author.mention}",
+            color=discord.Color.green()
+        )
+
+        await ctx.send(embed=new_embed)
 
 def setup(bot):
     bot.add_cog(Utility(bot))

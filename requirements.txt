@@ -7,3 +7,4 @@ psutil
 PyNaCl
 dnspython
 pymongo
+discord-pretty-help

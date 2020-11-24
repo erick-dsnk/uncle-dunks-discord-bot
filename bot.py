@@ -20,8 +20,7 @@ Uncle Dunk's Bot v1.6
 
 import discord
 from discord.ext import commands
-from exts.database import economy_collection
-from pretty_help import PrettyHelp, Navigation
+from pretty_help import PrettyHelp
 
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix = '-', intents=intents)
@@ -35,8 +34,6 @@ def get_token():
         f.close()
     
     return data
-
-token = get_token()
 ############################################
 
 ################## COGS ####################
@@ -49,4 +46,4 @@ client.load_extension('exts.utility')
 client.load_extension('exts.economy')
 ############################################
 
-client.run(token)
+client.run(get_token())

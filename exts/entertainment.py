@@ -1,10 +1,10 @@
+import random
 import discord
 from discord.ext import commands
 from random import randint, choice
 from discord.ext.commands import Context
 import praw
 import requests
-import asyncio
 
 
 def get_client_id():
@@ -107,7 +107,18 @@ class Entertainment(commands.Cog):
         '''
         It sends you a hot meme off Reddit!
         '''
-        memes = reddit_instance.subreddit('memes').hot()
+        sub = random.choice([
+            'memes',
+            'ComedyCemetery',
+            'MemeEconomy',
+            'dankmemes',
+            'terriblefacebookmemes',
+            'wholesomememes',
+            'okbuddyretard',
+            'comedyheaven'
+        ])
+
+        memes = reddit_instance.subreddit(sub).hot()
 
         pick_number = randint(0, 10)
 
@@ -120,17 +131,51 @@ class Entertainment(commands.Cog):
 
 
     # A cute doggo from reddit command :3
-    @commands.command()
+    @commands.command(aliases=['dog', 'doggie', 'pup', 'pupper', 'puppy'])
     async def doggo(self, ctx):
         '''
         Sends you a picture of a cute doggo :3
         '''
-        dogs = reddit_instance.subreddit('doggos').hot()
+        sub = random.choice([
+            'doggos',
+            'dogpictures',
+            'dogs',
+            'puppies',
+            'goldenretrievers'
+        ])
+
+        dogs = reddit_instance.subreddit(sub).hot()
 
         pick_number = randint(0, 10)
 
         for i in range(0, pick_number):
             submission = next(x for x in dogs if not x.stickied)
+        
+        chnl = ctx.channel
+
+        await chnl.send(submission.url)
+    
+
+    @commands.command(aliases=['kitten', 'kitty'])
+    async def cat(self, ctx):
+        '''
+        Sends you a picture of a cute kitty :3
+        '''
+        sub = random.choice([
+            'JellyBeanToes',
+            'CatsStandingUp',
+            'Kittens',
+            'Cats',
+            'CatsInBusinessAttire',
+            'TuckedInKitties'
+        ])
+        
+        cats = reddit_instance.subreddit(sub).hot()
+
+        pick_number = randint(0, 10)
+
+        for i in range(0, pick_number):
+            submission = next(x for x in cats if not x.stickied)
         
         chnl = ctx.channel
 
@@ -176,6 +221,91 @@ class Entertainment(commands.Cog):
 
 
         await ctx.send(embed=embed)
+    
+
+    @commands.command(aliases=['poke'])
+    async def pokemon(self, ctx: Context, poke: str):
+        base_url = "https://pokeapi.co/api/v2/pokemon/"
+
+        response = requests.get(base_url + poke)
+
+        if response.status_code == 404:
+            embed = discord.Embed(
+                title="Darn!",
+                description="Sorry, can't seem to find any information about that Pokemon. Check your spelling and try again!",
+                color=discord.Color.red()
+            )
+
+            await ctx.send(embed=embed)
+
+        else:
+            response = response.json()
+
+            abilities = response['abilities']
+            types = response['types']
+            stats = response['stats']
+            moves = response['moves']
+
+            ability_field = ""
+            type_field = ""
+            stat_field = ""
+            move_field = ""
+
+            for ability in abilities:
+                ability_field += ability['ability']['name'].title()
+                ability_field += "\n"
+
+            for _type in types:
+                type_field += _type['type']['name'].title()
+                type_field += "\n"
+
+            for stat in stats:
+                stat_field += stat['stat']['name'].title() + "\t\t" + str(stat['base_stat'])
+                stat_field += "\n"
+
+            for move in moves:
+                move_field += move['move']['name'].title()
+                move_field += "\n"
+
+            embed = discord.Embed(
+                title=f"{poke.title()}",
+                color=discord.Color.blurple()
+            )
+
+            embed.add_field(
+                name="**Height**",
+                value=f"{response['height']}"
+            )
+
+            embed.add_field(
+                name="**Weight**",
+                value=f"{response['weight']}"
+            )
+
+            embed.add_field(
+                name=f"**Types [{len(types)}**",
+                value=f"{type_field}"
+            )
+
+            embed.add_field(
+                name=f"**Abilities [{len(abilities)}]**",
+                value=f"{ability_field}"
+            )
+
+            embed.add_field(
+                name=f"**Stats**",
+                value=f"{stat_field}"
+            )
+            
+            embed.add_field(
+                name=f"**Moves**",
+                value=f"{move_field}"
+            )
+
+            embed.set_image(url=response['sprites']['back_default'])
+
+            await ctx.send(embed=embed)
+
 
 
 def setup(bot):
