@@ -78,13 +78,28 @@ class Events(Cog):
         if 'welcome_channel' in settings.keys():
             welcome_channel = get(member.guild.text_channels, id=settings['welcome_channel'])
 
-            embed = discord.Embed(
-                title=f"**{member.guild.name}**",
-                description=f"Welcome to {member.guild.name}! :partying_face:",
-                color=discord.Color.green()
-            )
+            if 'join_message' in settings.keys():
+                join_message = settings['join_message']
 
-            await welcome_channel.send(embed=embed)
+                if "{ mention }" in join_message:
+                    join_message.replace("{ mention }", member.mention)
+
+                embed = discord.Embed(
+                    title=f"**{member.guild.name}**",
+                    description=f"{join_message}",
+                    color=discord.Color.green()
+                )
+
+                await welcome_channel.send(embed=embed)
+            
+            else:
+                embed = discord.Embed(
+                    title=f"**{member.guild.name}**",
+                    description=f"Welcome to {member.guild.name}! :partying_face:",
+                    color=discord.Color.green()
+                )
+
+                await welcome_channel.send(embed=embed)
         
         else:
             pass
@@ -107,6 +122,38 @@ class Events(Cog):
             i += 1
         
         economy_collection.find_one_and_update({"_id": member.guild.id}, {"$set": {"members": members_data}})
+
+
+        settings = settings_collection.find_one({"_id": member.guild.id})['settings']
+
+        if 'welcome_channel' in settings.keys():
+            welcome_channel = get(member.guild.text_channels, id=settings['welcome_channel'])
+
+            if 'leave_message' in settings.keys():
+                leave_message = settings['leave_message']
+
+                if "{ mention }" in leave_message:
+                    leave_message.replace("{ mention }", member.mention)
+
+                embed = discord.Embed(
+                    title=f"**{member.guild.name}**",
+                    description=f"{leave_message}",
+                    color=discord.Color.dark_purple()
+                )
+
+                await welcome_channel.send(embed=embed)
+            
+            else:
+                embed = discord.Embed(
+                    title=f"**{member.guild.name}**",
+                    description=f"Bye {member.mention}! We're sorry to see you go :(",
+                    color=discord.Color.dark_purple()
+                )
+
+                await welcome_channel.send(embed=embed)
+        
+        else:
+            pass
 
 
     @Cog.listener()
