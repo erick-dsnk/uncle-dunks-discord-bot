@@ -47,7 +47,7 @@ class Games(Cog):
     @commands.command()
     async def tictactoe(self, ctx: Context):
         '''
-        Play a game of Tic Tac Toe against Uncle Dunk! (WIP)
+        Play a game of Tic Tac Toe against Uncle Dunk!
         '''
         finished = False
 
@@ -66,9 +66,7 @@ class Games(Cog):
 ```
 """
         
-        message = await ctx.send(
-            table
-        )
+        message = await ctx.send(table)
 
         available_choices = [
             'A1',
@@ -241,10 +239,14 @@ class Games(Cog):
 
                 break
 
+            else:
+                pass
+
+
     @commands.command()
-    async def flip(self, ctx: Context, bet: int):
+    async def roll(self, ctx: Context, bet: int):
         '''
-        Flip a coin!
+        Roll a dice!
         '''
         bot_choice = randint(1, 6)
 
@@ -259,9 +261,35 @@ class Games(Cog):
             statement = "Better luck next time!"
 
         embed = discord.Embed(
-            title=":dice: Flip!",
-            description=f"Your bet: `{bet}`\nOutcome: `{randint(1, 6)}`\n\n**{statement}**"
+            title=":dice: Roll!",
+            description=f"Your bet: `{bet}`\nOutcome: `{bot_choice}`\n\n**{statement}**"
         )
+
+        await ctx.send(embed=embed)
+    
+
+    @commands.command()
+    async def flip(self, ctx: Context, bet: str):
+        '''
+        Flip a coin!
+        `heads` or `tails`
+        '''
+        choices = ['heads', 'tails']
+
+        if bet in choices:
+            bot_choice = random.choice(choices)
+
+            if bet == bot_choice:
+                final_statement = 'You win!'
+            
+            else:
+                final_statement = 'You lose!'
+
+            await ctx.send(f"{bot_choice.title()}!")
+
+        else:
+            await ctx.send("That's not a valid choice!")
+
 
 def setup(bot):
     bot.add_cog(Games(bot))

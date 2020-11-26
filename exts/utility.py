@@ -330,7 +330,7 @@ class Utility(commands.Cog):
 
         embed.add_field(
             name=":robot: Version",
-            value="v1.6.0",
+            value="v1.6.2",
             inline=True
         )
 
@@ -586,6 +586,16 @@ class Utility(commands.Cog):
         )
 
         await ctx.send(embed=new_embed)
+
+
+    @commands.command()
+    async def topgg(self, ctx: Context):
+        '''
+        Get the top.gg page of Uncle Dunk.
+        '''
+        await ctx.send("My top.gg page! https://top.gg/bot/743859839821807736")
+    
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))

@@ -73,6 +73,24 @@ class Settings(Cog):
         await ctx.send(":white_check_mark: Successfully set leave message!")
 
 
+    @commands.command()
+    async def setsuggestionchannel(self, ctx: Context, channel_id: int):
+        '''
+        Set a channel in which to receive server suggestions.
+        '''
+        settings = settings_collection.find_one({"_id": ctx.guild.id})['settings']
+
+        if discord.utils.get(ctx.guild.text_channels, id=channel_id):
+            settings['suggestion_channel'] = channel_id
+            settings_collection.find_one_and_update(
+                {"_id": ctx.guild.id}, {"$set": {"settings": settings}}
+            )
+
+            await ctx.send(":white_check_mark: Successfully set suggestion channel!")
+        
+        else:
+            await ctx.send(":x: That's not a valid channel ID!")
     
+
 def setup(bot):
     bot.add_cog(Settings(bot))

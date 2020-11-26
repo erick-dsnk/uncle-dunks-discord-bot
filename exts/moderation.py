@@ -196,5 +196,76 @@ class Moderation(commands.Cog):
             await ctx.send(f":x: You don't have permission to use that command! {ctx.message.author.mention}")
 
 
+    @commands.has_permissions(kick_members=True)
+    @commands.command()
+    async def silence(self, ctx: Context, duration: str = "15m"):
+        '''
+        It mutes every person in the channel to give moderators time to intervene and handle the situation.
+        '''
+        initial_duration = duration
+        
+        if 's' in duration:
+            duration = int(duration.strip('s'))
+
+        elif 'm' in duration:
+            duration = int(duration.strip('m')) * 60
+
+        elif 'h' in duration:
+            duration = int(duration.strip('h')) * 3600
+
+        elif 'd' in duration:
+            duration = int(duration.strip('d')) * 86400
+
+        else:
+            duration = int(duration)
+        
+
+        channel = ctx.channel
+
+        for member in channel.members:
+            perms = channel.overwrites_for(member)
+            perms.send_messages = False
+            await channel.set_permissions(member, overwrite=perms, reason="silence")
+
+        await ctx.send(f":white_check_mark: Channel has been silenced for `{initial_duration}`.")
+
+        await asyncio.sleep(duration)
+
+        for member in channel.members:
+            perms = channel.overwrites_for(member)
+            perms.send_messages = True
+            await channel.set_permissions(member, overwrite=perms, reason="unsilence")
+
+        await ctx.send(":white_check_mark: Channel has been unsilenced.")
+
+
+    @silence.error
+    async def silence_error(self, ctx: Context, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(":x: You're not allowed to use that command!")
+
+
+    @commands.has_permissions(kick_members=True)
+    @commands.command()
+    async def unsilence(self, ctx: Context):
+        '''
+        Give back members of the channel the permission to chat again.
+        '''
+        channel = ctx.channel
+
+        for member in channel.members:
+            perms = channel.overwrites_for(member)
+            perms.send_messages = True
+            await channel.set_permissions(member, overwrite=perms, reason="unsilence")
+
+        await ctx.send(":white_check_mark: Channel has been unsilenced.")
+
+
+    @unsilence.error
+    async def unsilence_error(self, ctx: Context, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(":x: You're not allowed to use that command!")
+
+
 def setup(bot):
     bot.add_cog(Moderation(bot))

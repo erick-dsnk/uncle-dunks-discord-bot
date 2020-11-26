@@ -1,3 +1,4 @@
+import asyncio
 import random
 import discord
 from discord.ext import commands
@@ -323,6 +324,17 @@ class Entertainment(commands.Cog):
 
             await ctx.send(embed=embed)
 
+
+    @commands.has_permissions(kick_members=True)
+    @commands.command()
+    async def purge(self, ctx: Context, amount: int = 10):
+        await ctx.channel.purge(limit=(amount + 1))
+
+        message = await ctx.send(f":white_check_mark: Successfully cleared `{amount}` messages.")
+
+        await asyncio.sleep(5)
+
+        await message.delete()
 
 
 def setup(bot):
