@@ -90,6 +90,45 @@ class Settings(Cog):
         
         else:
             await ctx.send(":x: That's not a valid channel ID!")
+
+    
+    @commands.command()
+    async def prefix(self, ctx: Context, prefix: str = ""):
+        if prefix == "":
+            settings = settings_collection.find_one({"_id": ctx.guild.id})['settings']
+
+            if 'prefix' in settings.keys():
+                embed = discord.Embed(
+                    title=f":shield: Prefix for **{ctx.guild.name}**",
+                    description=f"My prefix: `{settings['prefix']}`",
+                    color=discord.Color.blurple()
+                )
+
+                embed.set_footer(text=f"Requested by {ctx.author.name}#{ctx.author.discriminator}")
+
+                await ctx.send(embed=embed)
+            
+            else:
+                embed = discord.Embed(
+                    title=f":shield: Prefix for **{ctx.guild.name}**",
+                    description="My prefix: `-`",
+                    color=discord.Color.blurple()
+                )
+
+                embed.set_footer(text=f"Requested by {ctx.author.name}#{ctx.author.discriminator}")
+
+                await ctx.send(embed=embed)
+
+        else:
+            settings = settings_collection.find_one({"_id": ctx.guild.id})['settings']
+
+            settings['prefix'] = prefix
+            
+            settings_collection.find_one_and_update(
+                {"_id": ctx.guild.id},
+                {"$set": {"settings": settings}}
+            )
+
     
 
 def setup(bot):

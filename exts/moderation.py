@@ -265,6 +265,21 @@ class Moderation(commands.Cog):
     async def unsilence_error(self, ctx: Context, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(":x: You're not allowed to use that command!")
+        
+
+    @commands.has_permissions(kick_members=True)
+    @commands.command()
+    async def purge(self, ctx: Context, amount: int = 10):
+        '''
+        Clear an amount of messages.
+        '''
+        await ctx.channel.purge(limit=(amount + 1))
+
+        message = await ctx.send(f":white_check_mark: Successfully cleared `{amount}` messages.")
+
+        await asyncio.sleep(5)
+
+        await message.delete()
 
 
 def setup(bot):

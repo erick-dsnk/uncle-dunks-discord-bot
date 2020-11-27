@@ -40,6 +40,9 @@ You got a feature request from `{ctx.author.name}#{ctx.author.discriminator}`
 
     @commands.command()
     async def suggest(self, ctx: Context, *, suggestion: str):
+        '''
+        Suggest a feature to the staff of this server.
+        '''
         embed = discord.Embed(
             title="Server suggestion",
             description=f"""
@@ -65,3 +68,7 @@ You have received a suggestion from `{ctx.author.name}#{ctx.author.discriminator
 
         else:
             await ctx.send(":x: No suggestion channel is set. Ask a moderator to set one with `-setsuggestionchannel <channel_id>`")
+
+
+def setup(bot: Bot):
+    bot.add_cog(Suggestions(bot))

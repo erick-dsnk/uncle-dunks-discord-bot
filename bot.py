@@ -14,16 +14,34 @@
 
 
 '''
-Uncle Dunk's Bot v1.6
+Uncle Dunk's Bot v1.6.3
 '''
 
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import Bot
 from pretty_help import PrettyHelp
+from discord import Message
+from exts.database import settings_collection
+
+
+def determine_prefix(bot: Bot, message: Message):
+    if message.guild:
+        settings = settings_collection.find_one({"_id": message.guild.id})['settings']
+
+        if 'prefix' in settings.keys():
+            return settings['prefix']
+        
+        else:
+            return '-'
+    
+    else:
+        return '-'
+
 
 intents = discord.Intents.all()
-client = commands.Bot(command_prefix = '-', intents=intents)
+client = commands.Bot(command_prefix=determine_prefix, intents=intents)
 
 client.help_command = PrettyHelp()
 
@@ -45,6 +63,7 @@ client.load_extension('exts.moderation')
 client.load_extension('exts.utility')
 client.load_extension('exts.economy')
 client.load_extension('exts.settings')
+client.load_extension('exts.suggestions')
 ############################################
 
 client.run(get_token())
