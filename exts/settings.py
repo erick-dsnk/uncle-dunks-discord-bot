@@ -91,7 +91,8 @@ class Settings(Cog):
         else:
             await ctx.send(":x: That's not a valid channel ID!")
 
-    
+
+    @commands.has_permissions(administrator=True)
     @commands.command()
     async def prefix(self, ctx: Context, prefix: str = ""):
         if prefix == "":
@@ -128,7 +129,7 @@ class Settings(Cog):
                 {"_id": ctx.guild.id},
                 {"$set": {"settings": settings}}
             )
-
+        
     
 
 def setup(bot):
