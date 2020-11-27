@@ -261,8 +261,9 @@ class Games(Cog):
             statement = "Better luck next time!"
 
         embed = discord.Embed(
-            title=":dice: Roll!",
-            description=f"Your bet: `{bet}`\nOutcome: `{bot_choice}`\n\n**{statement}**"
+            title=":game_die: Roll!",
+            description=f"Your bet: `{bet}`\nOutcome: `{bot_choice}`\n\n**{statement}**",
+            color=discord.Color.green()
         )
 
         await ctx.send(embed=embed)
@@ -285,7 +286,7 @@ class Games(Cog):
             else:
                 final_statement = 'You lose!'
 
-            await ctx.send(f"{bot_choice.title()}!")
+            await ctx.send(f"{bot_choice.title()}! {final_statement}")
 
         else:
             await ctx.send("That's not a valid choice!")
