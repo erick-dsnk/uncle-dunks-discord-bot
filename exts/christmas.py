@@ -10,6 +10,7 @@ class Christmas(Cog):
         self.bot = bot
     
 
+    @commands.has_permissions(kick_members=True)
     @commands.command()
     async def christmasplay(self, ctx: Context) -> None:
         '''
