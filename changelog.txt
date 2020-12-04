@@ -1,0 +1,15 @@
+**🎄 It's the most wonderful time of the year!**
+🔊 Since the last major update, many new features have been added to Uncle Dunk!
+Some of the most noteworthy are:
+ - New and improved music feature!
+ - New economy system!
+ - Customizable settings through easy to use commands!
+ - Customizable prefix for your server!
+ - Many more moderation commands!
+ - In-chat games like Rock, Paper, Scissors and TicTacToe!
+
+🎅 And in the spirit of Christmas, Uncle Dunk can now constantly play Christmas music in your voice channel of choice to get everyone in your server in the jolly spirit!
+
+🥳 On the same cheery note, Uncle Dunk has officially been approved on [top.gg](https://top.gg)! You can find the bot's page [here](https://top.gg/bot/743859839821807736). Make sure to vote it because soon, voters will be receiving exclusive rewards!
+
+Happy holidays, from Uncle Dunk!

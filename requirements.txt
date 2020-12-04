@@ -8,3 +8,4 @@ PyNaCl
 dnspython
 pymongo
 discord-pretty-help
+lavalink

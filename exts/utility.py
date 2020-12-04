@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 from newsapi import NewsApiClient
@@ -595,6 +596,23 @@ class Utility(commands.Cog):
         '''
         await ctx.send("My top.gg page! https://top.gg/bot/743859839821807736")
     
+
+    @commands.command(aliases=['changes', 'change'])
+    async def changelog(self, ctx: Context):
+        '''
+        Show Uncle Dunk's latest features and commands!
+        '''
+
+        with open(os.path.abspath('changelog.txt'), 'r') as f:
+            changelog_message = f.read()
+
+        embed = discord.Embed(
+            title=':robot: Uncle Dunk Changelog!',
+            description=changelog_message,
+            color=discord.Color.green()
+        )
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

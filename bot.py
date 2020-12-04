@@ -65,7 +65,8 @@ client.load_extension('exts.economy')
 client.load_extension('exts.settings')
 client.load_extension('exts.suggestions')
 client.load_extension('exts.managing')
-client.load_extension('exts.music')
+client.load_extension('exts.christmas')
+# client.load_extension('exts.music')
 ############################################
 
 client.run(get_token())
