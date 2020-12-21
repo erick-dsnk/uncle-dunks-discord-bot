@@ -374,7 +374,7 @@ class Utility(commands.Cog):
         if user.status == discord.Status.online:
             embed.add_field(
                 name=":moyai: **User Status**",
-                value="(*) :green_circle: Online\n( ) :red_circle: Do Not Disturb\n( ) :black_circle: Offline/Invisible"
+                value="(*) :green_circle: Online\n( ) :yellow_circle: Idle\n( ) :red_circle: Do Not Disturb\n( ) :black_circle: Offline/Invisible"
             )
         
         elif user.status == discord.Status.idle:
