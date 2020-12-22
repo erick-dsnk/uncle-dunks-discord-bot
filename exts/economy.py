@@ -22,7 +22,7 @@ class Economy(Cog):
 
 
     @commands.cooldown(1, 1800, commands.BucketType.member)
-    @commands.command()
+    @commands.command(aliases=['w'])
     async def work(self, ctx: Context):
         '''
         Earn your money the honest way! You can get between 50 and 300 dunk dollars working! 
@@ -159,7 +159,7 @@ class Economy(Cog):
             await ctx.send(f"You're on cooldown! You will be able to use that command in **{convert_to_time(error.retry_after)}**!")
 
 
-    @commands.command()
+    @commands.command(aliases=['bal', 'wallet'])
     async def balance(self, ctx: Context, user: discord.Member = None):
         '''
         Check your account balance.
@@ -196,10 +196,10 @@ class Economy(Cog):
             else: pass
     
 
-    @commands.command()
+    @commands.command(aliases=['dep'])
     async def deposit(self, ctx: Context, amount) -> None:
         '''
-        Deposit your money in the bank to be protected from thiefs!
+        Deposit your money in the bank to be protected from thieves!
         You can use `all` as the amount to deposit all of your cash in the bank.
         '''
         members_data = economy_collection.find_one({"_id": ctx.guild.id})['members']
