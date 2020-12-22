@@ -1,9 +1,9 @@
+from typing import Tuple
 import discord
 from discord import Role
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, Bot
 from discord.utils import get
-
 
 class Roles(Cog):
     def __init__(self, bot: Bot) -> None:
@@ -120,6 +120,44 @@ class Roles(Cog):
 
             await ctx.send(embed=embed)
 
+
+    @commands.command()
+    async def roleinfo(self, ctx: Context, role):
+        '''
+        Get information about a role.
+        '''
+
+        if type(role) == int:
+            role = get(ctx.guild.roles, id=role)
+
+        elif type(role) == str:
+            for r in ctx.guild.roles:
+                if role in r.name:
+                    role = r
+
+        elif type(role) == Role:
+            pass
+
+
+        if role:
+            embed = discord.Embed(
+                title="Role info",
+                color=discord.Color.blurple()
+            )
+
+            embed.add_field(
+                name=":person_pouting: Name",
+                value=f"`{role.name}`"
+            )
+
+            embed.add_field(
+                name=":green_circle: Colour",
+                value=f"`{role.colour}`"
+            )
+
+            embed.add_field(
+                name=""
+            )
 
 def setup(bot: Bot):
     bot.add_cog(Roles(bot))

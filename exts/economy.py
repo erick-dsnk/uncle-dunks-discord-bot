@@ -7,13 +7,10 @@ import random
 
 
 def convert_to_time(seconds):
-    seconds = seconds % (24 * 3600)
-    hours = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-    seconds %= 60
+    mins, secs = divmod(seconds, 60)
+    hours, mins = divmod(mins, 60)
 
-    return f"{hours} hours, {minutes} minutes, {seconds} seconds"
+    return f"{hours} hours, {mins} minutes, {secs} seconds"
 
 
 class Economy(Cog):
@@ -229,6 +226,68 @@ class Economy(Cog):
                     
                     member['money'] -= amount
                     member['bank'] += amount
+
+                    break
+            
+            else:
+                pass
+        
+        economy_collection.update_one(
+            {"_id": ctx.guild.id},
+            {"$set": {"members": members_data}}
+        )
+
+        embed = discord.Embed(
+            title=":bank: Bank of Dunkville",
+            description=f"Succesfully deposited {amount}$ in your bank account.",
+            color=discord.Color.blurple()
+        )
+
+        embed.add_field(
+            name=":moneybag: Cash",
+            value=f"`{final['money']}$`"
+        )
+
+        embed.add_field(
+            name=":bank: Account",
+            value=f"`{final['bank']}$`"
+        )
+
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def withdraw(self, ctx: Context, amount: int):
+        '''
+        Withdraw money to spend it on items!
+        You can use `all` as the amount to withdraw all of your cash from the bank.
+        '''
+        members_data = economy_collection.find_one({"_id": ctx.guild.id})['members']
+        
+        final = None
+
+        for member in members_data:
+            if member['id'] == ctx.message.author.id:
+                final = member
+
+                if amount == 'all':
+                    amount = member['bank']
+
+                    member['bank'] -= amount
+                    member['money'] += amount
+
+                    break
+            
+                elif int(amount) <= member['bank']:
+                    member['money'] += int(amount)
+                    member['bank'] -= int(amount)
+
+                    break
+                
+                else:
+                    amount = member['bankk']
+                    
+                    member['money'] += amount
+                    member['bank'] -= amount
 
                     break
             

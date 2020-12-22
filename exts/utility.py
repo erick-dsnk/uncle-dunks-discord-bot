@@ -8,6 +8,17 @@ from wikipedia import page
 import psutil
 from discord.ext.commands import Context
 import asyncio
+from PIL import Image, ImageDraw
+from typing import Tuple
+from io import BytesIO
+
+
+def hex_to_rgb(_hex: str) -> Tuple[int]:
+    _hex = _hex.lstrip('#')
+
+    lv = len(_hex)
+
+    return tuple(int(_hex[i:i + lv // 3] for i in range(0, lv, lv // 3)))
 
 
 def get_newsapi_key():
@@ -613,6 +624,21 @@ class Utility(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+    @commands.command(aliases=['c', 'col', 'hex'])
+    async def color(self, ctx: Context, hex_code: str):
+        '''
+        Get an image of the specified hex color!
+        '''
+        im = Image.new("RGB", (100, 100), hex_to_rgb(hex_code))
+
+        buffer = BytesIO()
+
+        im.save(buffer, "png")
+
+        buffer.seek(0)
+
+        await ctx.send(file=discord.File(fp=buffer, filename="color.png"))
 
 
 def setup(bot):
