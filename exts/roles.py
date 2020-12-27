@@ -1,3 +1,5 @@
+from datetime import datetime
+import inspect
 from typing import Tuple
 import discord
 from discord import Role
@@ -17,6 +19,13 @@ class Roles(Cog):
         Add a role to a user!
         Role can be in the form of an ID, name, or a role mention!
         '''
+        try:
+            role = int(role)
+
+        except Exception as e:
+            pass
+
+
         if type(role) == str:
             for r in ctx.guild.roles:
                 if role.lower() in r.name.lower():
@@ -24,11 +33,14 @@ class Roles(Cog):
 
                     embed = discord.Embed(
                         title=":white_check_mark: Success!",
-                        description=f"Added role to {member.mention}!",
+                        description=f"Added role `{r.name}` to {member.mention}!",
                         color=discord.Color.green()
                     )
 
                     await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(":x: Couldn't find a role with that name!")
 
         elif type(role) == int:
             r = get(ctx.guild.roles, id=role)
@@ -45,24 +57,8 @@ class Roles(Cog):
                 await ctx.send(embed=embed)
             
             else:
-                embed = discord.Embed(
-                    title=":x: Oops!",
-                    description="Couldn't find any role with that ID!",
-                    color=discord.Color.red()
-                )
+                await ctx.send(":x: Couldn't find a role with that ID!")
 
-                await ctx.send(embed=embed)
-
-        elif type(role) == Role:
-            await member.add_roles(role)
-
-            embed = discord.Embed(
-                title=":white_check_mark: Success!",
-                description=f"Added role to {member.mention}!",
-                color=discord.Color.green()
-            )
-
-            await ctx.send(embed=embed)
     
 
     @commands.has_permissions(manage_roles=True)
@@ -72,6 +68,13 @@ class Roles(Cog):
         Remove a role from a user!
         Role can be in the form of an ID, name, or a role mention!
         '''
+        try:
+            role = int(role)
+
+        except Exception as e:
+            pass
+
+
         if type(role) == str:
             for r in ctx.guild.roles:
                 if role.lower() in r.name.lower():
@@ -79,11 +82,14 @@ class Roles(Cog):
 
                     embed = discord.Embed(
                         title=":white_check_mark: Success!",
-                        description=f"Removed role from {member.mention}!",
+                        description=f"Removed role `{r.name}` from {member.mention}!",
                         color=discord.Color.green()
                     )
 
                     await ctx.send(embed=embed)
+            
+            else:
+                await ctx.send("Couldn't find a role with that name!")
 
 
         elif type(role) == int:
@@ -94,70 +100,107 @@ class Roles(Cog):
 
                 embed = discord.Embed(
                     title=":white_check_mark: Success!",
-                    description=f"Removed role from {member.mention}!",
+                    description=f"Removed role `{r.name}` from {member.mention}!",
                     color=discord.Color.green()
                 )
 
                 await ctx.send(embed=embed)
 
             else:
-                embed = discord.Embed(
-                    title=":x: Oops!",
-                    description="Couldn't find any role with that ID!",
-                    color=discord.Color.red()
-                )
-
-                await ctx.send(embed=embed)
-
-        elif type(role) == Role:
-            await member.remove_roles(role)
-
-            embed = discord.Embed(
-                title=":white_check_mark: Success!",
-                description=f"Removed role from {member.mention}!",
-                color=discord.Color.green()
-            )
-
-            await ctx.send(embed=embed)
+                await ctx.send(":x: Couldn't find a role with that ID!")
 
 
     @commands.command()
     async def roleinfo(self, ctx: Context, role):
         '''
-        Get information about a role.
+        Get information about a role!
         '''
 
-        if type(role) == int:
-            role = get(ctx.guild.roles, id=role)
+        try:
+            role = int(role)
 
+        except Exception as e:
+            pass
+    
+        if type(role) == int:
+            role = get(ctx.guild.roles, id=int(role))
+
+            if not role:
+                await ctx.send(":x: Couldn't find a role with that ID!")
+                return
+
+        
         elif type(role) == str:
             for r in ctx.guild.roles:
-                if role in r.name:
+                if role.lower() in r.name.lower():
                     role = r
+                
+            else:
+                await ctx.send(":x: Couldn't find a role with that name!")
+                return
 
-        elif type(role) == Role:
-            pass
+        embed = discord.Embed(
+            title="Role Info",
+            color=discord.Color.blurple()
+        )
 
+        embed.add_field(
+            name="Name",
+            value=f"`{role.name}`",
+            inline=True
+        )
 
-        if role:
-            embed = discord.Embed(
-                title="Role info",
-                color=discord.Color.blurple()
-            )
+        embed.add_field(
+            name="Role Color",
+            value=f"`{role.color}`",
+            inline=True
+        )
+
+        embed.add_field(
+            name="Created at",
+            value=f"`{datetime.strftime(role.created_at, '%d-%m-%Y')}` @ `{datetime.strftime(role.created_at, '%H:%M:%Y')}`"
+        )
+        
+        embed.add_field(
+            name="Members",
+            value=f"`{len(role.members)}`"
+        )
+
+        attrs = inspect.getmembers(role.permissions, lambda a:not(inspect.isroutine(a)))
+
+        attrs = [a for a in attrs if not(a[0].startswith('__') and a[0].endswith('__'))]
+
+        del attrs[0]
+        del attrs[0]
+
+        perms = {}
+
+        for a in attrs:
+            perms[a[0]] = a[1]
+
+        final_perms = ""
+
+        if perms['administrator'] is True:
+            final_perms += "`Administrator`"
 
             embed.add_field(
-                name=":person_pouting: Name",
-                value=f"`{role.name}`"
+                name="Key Permissions",
+                value=final_perms
+            )
+        
+        else:
+            for perm, value in perms.items():
+                if value is True:
+                    final_perms += f"`{perm.replace('_', ' ').title()}` "
+            
+            embed.add_field(
+                name="Key Permissions",
+                value=final_perms
             )
 
-            embed.add_field(
-                name=":green_circle: Colour",
-                value=f"`{role.colour}`"
-            )
+        await ctx.send(embed=embed)
 
-            embed.add_field(
-                name=""
-            )
+
 
 def setup(bot: Bot):
     bot.add_cog(Roles(bot))

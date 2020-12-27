@@ -14,7 +14,7 @@
 
 
 '''
-Uncle Dunk's Bot v1.6.3
+Uncle Dunk's Bot v1.6.7
 '''
 
 
@@ -24,20 +24,25 @@ from discord.ext.commands import Bot
 from pretty_help import PrettyHelp
 from discord import Message
 from exts.database import settings_collection
+import sys
 
 
 def determine_prefix(bot: Bot, message: Message):
-    if message.guild:
-        settings = settings_collection.find_one({"_id": message.guild.id})['settings']
+    if len(sys.argv) > 1 and sys.argv[1] == 'dev':
+        return '}'
+    
+    else:
+        if message.guild:
+            settings = settings_collection.find_one({"_id": message.guild.id})['settings']
 
-        if 'prefix' in settings.keys():
-            return settings['prefix']
+            if 'prefix' in settings.keys():
+                return settings['prefix']
+            
+            else:
+                return '-'
         
         else:
             return '-'
-    
-    else:
-        return '-'
 
 
 intents = discord.Intents.all()
@@ -47,11 +52,17 @@ client.help_command = PrettyHelp()
 
 ################ GET TOKEN FUNCTION ###############
 def get_token():
-    with open("tokens/token.key", 'r') as f:
-        data = f.read()
-        f.close()
-    
-    return data
+    if len(sys.argv) > 1 and sys.argv[1] == 'dev':
+        with open("tokens/test_token.key", "r") as f:
+            data = f.read()
+        
+        return data
+
+    else:
+        with open("tokens/token.key", 'r') as f:
+            data = f.read()
+        
+        return data
 ############################################
 
 ################## COGS ####################
@@ -65,7 +76,7 @@ client.load_extension('exts.economy')
 client.load_extension('exts.settings')
 client.load_extension('exts.suggestions')
 client.load_extension('exts.managing')
-client.load_extension('exts.christmas')
+client.load_extension('exts.roles')
 # client.load_extension('exts.music')
 ############################################
 

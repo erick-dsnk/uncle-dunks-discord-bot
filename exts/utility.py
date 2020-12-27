@@ -14,11 +14,9 @@ from io import BytesIO
 
 
 def hex_to_rgb(_hex: str) -> Tuple[int]:
-    _hex = _hex.lstrip('#')
+    _hex = _hex.strip('#')
 
-    lv = len(_hex)
-
-    return tuple(int(_hex[i:i + lv // 3] for i in range(0, lv, lv // 3)))
+    return tuple(int(_hex[i:i+2], 16) for i in (0, 2, 4))
 
 
 def get_newsapi_key():
@@ -342,7 +340,7 @@ class Utility(commands.Cog):
 
         embed.add_field(
             name=":robot: Version",
-            value="v1.6.2",
+            value="v1.6.7",
             inline=True
         )
 
@@ -622,6 +620,8 @@ class Utility(commands.Cog):
             description=changelog_message,
             color=discord.Color.green()
         )
+
+        embed.set_footer(text="Uncle Dunk v1.6.7")
 
         await ctx.send(embed=embed)
 
