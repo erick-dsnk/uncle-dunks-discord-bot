@@ -130,7 +130,74 @@ class Settings(Cog):
                 {"$set": {"settings": settings}}
             )
         
+    @commands.command()
+    async def setautomod(self, ctx: Context, mode: str):
+        settings = settings_collection.find_one(
+            {"_id": ctx.guild.id}
+        )['settings']
+
+        if mode == 'on':
+            settings['automod'] = mode
+
+        elif mode == 'off':
+            settings['automod'] = mode
+        
+        else:
+            await ctx.send(f":x: Invalid option `{mode}`. Please pick between `on` and `off`")
+
+            return
+        
+        await ctx.send(f':white_check_mark: Successfully set automod to `{mode}`')
+
+        settings_collection.find_one_and_update(
+            {"_id": ctx.guild.id},
+            {
+                "$set": {"settings": settings}
+            }
+        )
     
+
+    @commands.command()
+    async def addbadpatterns(self, ctx: Context, *, patterns: str):
+        patterns = patterns.lower().split(' ')
+
+        settings = settings_collection.find_one(
+            {'_id': ctx.guild.id}
+        )
+
+        if 'bad_patterns' in settings.keys():
+            existing_patterns = settings['bad_patterns']
+
+            for pattern in existing_patterns:
+                if pattern in patterns:
+                    pass
+                    
+                else:
+                    existing_patterns.append(pattern)
+            
+            settings['bad_patterns'] = existing_patterns
+
+            settings_collection.find_one_and_update(
+                {"_id": ctx.guild.id},
+                {
+                    "$set": {
+                        "settings": settings
+                    }
+                }
+            )
+        
+        else:
+            settings['bad_patterns'] = patterns
+
+            settings_collection.find_one_and_update(
+                {"_id": ctx.guild.id},
+                {
+                    "$set": {
+                        "settings": settings
+                    }
+                }
+            )
+
 
 def setup(bot):
     bot.add_cog(Settings(bot))

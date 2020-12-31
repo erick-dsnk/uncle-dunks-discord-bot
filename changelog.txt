@@ -1,12 +1,6 @@
-**Uncle Dunk v1.6.7 is out now!**
-:speaker: Uncle Dunk update 1.6.7 contains some cool new features, like:
-    - New category of commands called `Roles`!
-    - Bug fixes!
-    - New utility commands!
-
-Also, removed Christmas category, since Christmas is sadly over. :(
-
-On a cheerier note, I'm working on a web dashboard for Uncle Dunk and a new leaderboard system!
-
-Make sure to vote Uncle Dunk on [top.gg]() because soon you will be getting exclusive rewards for voting!
-
+**Uncle Dunk v1.7.0 is out now!**
+:speaker: Introducing in version 1.7.0... AUTOMOD!
+New in this version of Uncle Dunk, a new feature has been added, called Automod!
+This new feature makes the life of Discord server staff easier, including chat filtering, auto muting and more!
+I do have some even bigger news for you... A new web dashboard is coming to Uncle Dunk! Soon, you will be able to customize the settings of the bot for your server from the comfort of a clean and easy-to-use website!
+The dashboard will be available by update 2.0.0, so stay tuned for that!
