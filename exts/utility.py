@@ -11,6 +11,7 @@ import asyncio
 from PIL import Image, ImageDraw
 from typing import Tuple
 from io import BytesIO
+import json
 
 
 def hex_to_rgb(_hex: str) -> Tuple[int]:
@@ -639,6 +640,89 @@ class Utility(commands.Cog):
         buffer.seek(0)
 
         await ctx.send(file=discord.File(fp=buffer, filename="color.png"))
+
+
+    @commands.command(aliases=['urban', 'dictionary', 'dict'])
+    async def define(self, ctx: Context, *, query: str):
+        '''
+        Define a phrase using Urban Dictionary!
+        '''
+
+        url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
+
+        querystring = {"term": query}
+
+        headers = {
+            'x-rapidapi-key': get_rapid_api_key(),
+            'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com"
+        }
+
+        resp = requests.request(
+            method='GET',
+            url=url,
+            headers=headers,
+            params=querystring
+        ).json()['list'][0:3]
+        
+        i = 0
+
+        embed = discord.Embed(
+            title=f'Urban Dictionary: {resp[i]["word"]}',
+            description=f'**Definition**: {resp[i]["definition"]}',
+            color=discord.Color.blurple()
+        )
+
+        msg = await ctx.send(embed=embed)
+
+        await msg.add_reaction('▶️')
+        await msg.add_reaction('◀️')
+        await msg.add_reaction('❌')
+
+        def check(reaction, user):
+            return (
+                user == ctx.message.author and reaction.emoji == '◀️'
+            ) or (
+                user == ctx.message.author and reaction.emoji == '▶️'
+            ) or (
+                user == ctx.message.author and reaction.emoji == '❌'
+            )
+        
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    'reaction_add',
+                    timeout=60.0,
+                    check=check
+                )
+
+                if str(reaction.emoji) == '▶️':
+                    if i < 2:
+                        i += 1
+
+                    else:
+                        i = 0
+                
+                if str(reaction.emoji) == '◀️':
+                    if i > 0:
+                        i -= 1
+
+                    else:
+                        i = 2
+                
+                elif str(reaction.emoji) == '❌':
+                    break
+                    
+                embed = discord.Embed(
+                    title=f'Urban Dictionary: {resp[i]["word"]}',
+                    description=f'**Definition**: {resp[i]["definition"]}',
+                    color=discord.Color.blurple()
+                )
+
+                await msg.edit(embed=embed)
+
+            except asyncio.TimeoutError:
+                break
+
 
 
 def setup(bot):

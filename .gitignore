@@ -3,3 +3,7 @@ helpers/__pycache__
 tests
 tokens/*
 .vscode
+site/node_modules
+site/.env
+site/debug.log
+site/yarn-error.log

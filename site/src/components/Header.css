@@ -1,0 +1,38 @@
+.Header {
+    position: sticky;
+    position: -webkit-sticky;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    padding: 1em;
+    margin-bottom: 1em;
+    background-color: #353238;
+    color: whitesmoke;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.title > a {
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.navBar {
+    margin-top: 5px;
+    right: 0;
+    position: absolute;
+}
+
+.navLink {
+    text-decoration: none;
+    margin-right: 10px;
+    margin-left: 10px;
+    color: whitesmoke;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.navLink:hover {
+    background-color: #262429;
+}
